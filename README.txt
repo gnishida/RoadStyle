@@ -1,0 +1,3 @@
+﻿■ RoadStyleという名前だけど、実際はGSMファイルビューアという感じ。
+
+RoadPreprocessorによって生成されたGSMファイルを開いて道路網を表示する。
