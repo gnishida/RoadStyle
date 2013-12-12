@@ -10,10 +10,10 @@
 class RoadStyle;
 
 class GLWidget : public QGLWidget {
-private:
+public:
 	RoadStyle* mainWin;
 	Camera* camera;
-	RoadGraph* roadGraph;
+	RoadGraph* roads;
 	RoadGraphRenderer* renderer;
 	QPoint lastPos;
 
@@ -23,7 +23,6 @@ public:
 
 	void drawScene();
 	void loadOSM(QString filename);
-	RoadGraph* getRoadGraph();
 
 protected:
 	void mousePressEvent(QMouseEvent *event);

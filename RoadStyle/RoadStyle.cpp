@@ -49,19 +49,19 @@ void RoadStyle::open() {
 
 void RoadStyle::showHighways(bool flag) {
 	attributes->set("showHighways", flag);
-	glWidget->getRoadGraph()->setModified();
+	glWidget->roads->setModified();
 	glWidget->updateGL();
 }
 
 void RoadStyle::showAvenues(bool flag) {
 	attributes->set("showAvenues", flag);
-	glWidget->getRoadGraph()->setModified();
+	glWidget->roads->setModified();
 	glWidget->updateGL();
 }
 
 void RoadStyle::showStreets(bool flag) {
 	attributes->set("showStreets", flag);
-	glWidget->getRoadGraph()->setModified();
+	glWidget->roads->setModified();
 	glWidget->updateGL();
 }
 

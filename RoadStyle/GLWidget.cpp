@@ -14,7 +14,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), p
 	camera = new Camera();
 	//camera->setTranslation(-11840.0f, 354100.0f, 100.0f);
 	//camera->setLookAt(-11840.0f, 354100.0f, 0.0f);
-	roadGraph = new RoadGraph();
+	roads = new RoadGraph();
 	renderer = new RoadGraphRenderer();
 }
 
@@ -22,22 +22,20 @@ GLWidget::~GLWidget() {
 }
 
 void GLWidget::drawScene() {
-	renderer->render(roadGraph, mainWin);
+	renderer->render(roads, mainWin);
 }
 
 void GLWidget::loadOSM(QString filename) {
-	roadGraph->clear();
+	roads->clear();
 
 	FILE* fp = fopen(filename.toUtf8().data(), "rb");
-	roadGraph->load(fp, 7);
+	roads->load(fp, 7);
 
 	camera->setLookAt(0.0f, 0.0f, 0.0f);
-	camera->setTranslation(0.0f, 0.0f, 100.0f);
-	updateGL();
-}
+	camera->setTranslation(0.0f, 0.0f, 150.0f);
+	roads->widthPerLane = 2.0f;
 
-RoadGraph* GLWidget::getRoadGraph() {
-	return roadGraph;
+	updateGL();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
@@ -49,7 +47,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 		QVector2D pos;
 		if (mouseTo2D(event->x(), event->y(), &pos)) {
 			mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
-			RoadEdge* selectedEdge = roadGraph->select(pos);
+			RoadEdge* selectedEdge = roads->select(pos);
 			mainWin->propertyWindow->setRoadEdge(selectedEdge);
 			updateGL();
 		}
@@ -70,26 +68,35 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 	float dy = (float)(event->y() - lastPos.y());
 	float camElevation = camera->getCamElevation();
 
-	/*if (event->buttons() & Qt::LeftButton) {	// Rotate
-		setCursor(Qt::SizeVerCursor);
-
-		camera->changeXRotation(dy * 3);
-		camera->changeZRotation(-dx * 3);
-		lastPos = event->pos();
-	} else*/ if (event->buttons() & Qt::MidButton) {
-		camera->changeXYZTranslation(-dx * 10, dy * 10, 0);
+	if (event->buttons() & Qt::LeftButton) {			// Shift
+		camera->changeXYZTranslation(-dx * camera->dz * 0.001f, dy * camera->dz * 0.001f, 0);
 		lastPos = event->pos();
 	} else if (event->buttons() & Qt::RightButton) {	// Zoom
 		setCursor(Qt::SizeVerCursor);
 
 		camera->changeXYZTranslation(0, 0, -dy * 10);
+		if (camera->dz < 150.0f) camera->dz = 150.0f;
+
+		// define the width per lane according to the z coordinate of the camera
+		if (camera->dz < 350.0f) {
+			roads->setWidthPerLane(2.0f);
+		} else if (camera->dz < 700.0f) {
+			roads->setWidthPerLane(4.0f);
+		} else if (camera->dz < 1300.0f) {
+			roads->setWidthPerLane(7.0f);
+		} else if (camera->dz < 2500.0f) {
+			roads->setWidthPerLane(10.0f);
+		} else {
+			roads->setWidthPerLane(16.0f);
+		}
+
 		lastPos = event->pos();
 	}
 	updateGL();
 }
 
 void GLWidget::initializeGL() {
-	qglClearColor(QColor(128, 128, 128));
+	qglClearColor(QColor(233, 229, 220));
 	glClearDepth(1.0f);
 
 	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );

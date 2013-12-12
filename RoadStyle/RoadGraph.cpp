@@ -14,6 +14,7 @@
 
 RoadGraph::RoadGraph() {
 	selectedEdge = NULL;
+	widthPerLane = 2.0f;
 }
 
 RoadGraph::~RoadGraph() {
@@ -43,6 +44,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			if (edge->type == 1) continue;
 		}
 
+		// draw the border with darker color
 		for (int i = 0; i < num - 1; ++i) {
 			QVector3D pt1 = edge->getPolyLine()[i];
 			QVector3D pt2 = edge->getPolyLine()[i + 1];
@@ -50,32 +52,101 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			vec = QVector3D(-vec.y(), vec.x(), 0.0f);
 			vec.normalize();
 
-			QVector3D p0 = pt1 + vec * edge->getWidth() / 2.0f;
-			QVector3D p1 = pt1 - vec * edge->getWidth() / 2.0f;
-			QVector3D p2 = pt2 - vec * edge->getWidth() / 2.0f;
-			QVector3D p3 = pt2 + vec * edge->getWidth() / 2.0f;
+			QVector3D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector3D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector3D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector3D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.6f;
 			//QVector3D normal = ucore::Util::calculateNormal(p0, p1, p2);
 
 			switch (edge->type) {
-			case 3:
-				v.color[0] = 0.53725f;
-				v.color[1] = 0.64313f;
-				v.color[2] = 0.79607f;
+			case 3:	// high way
+				v.color[0] = 0.89803f;
+				v.color[1] = 0.6;
+				v.color[2] = 0.08235;
+				v.location[2] = 0.0f;
 				break;
 			case 2: // avenue
-				v.color[0] = 0.86274f;
-				v.color[1] = 0.61960f;
-				v.color[2] = 0.61960f;
+				v.color[0] = 0.83921f;
+				v.color[1] = 0.80784f;
+				v.color[2] = 0.77647f;
+				v.location[2] = 0.0f;
 				break;
 			case 1: // street
-				v.color[0] = 1.0f;
-				v.color[1] = 1.0f;
-				v.color[2] = 1.0f;
+				v.color[0] = 0.83921f;
+				v.color[1] = 0.80784f;
+				v.color[2] = 0.77647f;
+				v.location[2] = 0.0f;
 				break;
 			default:
 				v.color[0] = 1.0f;
 				v.color[1] = 1.0f;
 				v.color[2] = 1.0f;
+				v.location[2] = 0.0f;
+				break;
+			}
+
+			v.location[0] = p0.x();
+			v.location[1] = p0.y();
+			vertices.push_back(v);
+
+			v.location[0] = p1.x();
+			v.location[1] = p1.y();
+			vertices.push_back(v);
+
+			v.location[0] = p2.x();
+			v.location[1] = p2.y();
+			vertices.push_back(v);
+
+			v.location[0] = p0.x();
+			v.location[1] = p0.y();
+			vertices.push_back(v);
+
+			v.location[0] = p2.x();
+			v.location[1] = p2.y();
+			vertices.push_back(v);
+
+			v.location[0] = p3.x();
+			v.location[1] = p3.y();
+			vertices.push_back(v);
+		}
+
+		for (int i = 0; i < num - 1; ++i) {
+			QVector3D pt1 = edge->getPolyLine()[i];
+			QVector3D pt2 = edge->getPolyLine()[i + 1];
+			QVector3D vec = pt2 - pt1;
+			vec = QVector3D(-vec.y(), vec.x(), 0.0f);
+			vec.normalize();
+
+			QVector3D p0 = pt1 + vec * edge->getWidth(widthPerLane) / 2.0f;
+			QVector3D p1 = pt1 - vec * edge->getWidth(widthPerLane) / 2.0f;
+			QVector3D p2 = pt2 - vec * edge->getWidth(widthPerLane) / 2.0f;
+			QVector3D p3 = pt2 + vec * edge->getWidth(widthPerLane) / 2.0f;
+			//QVector3D normal = ucore::Util::calculateNormal(p0, p1, p2);
+
+			switch (edge->type) {
+			case 3:	// high way
+				v.color[0] = 1.0f;
+				v.color[1] = 0.88235f;
+				v.color[2] = 0.40784f;
+				v.location[2] = 2.0f;
+				break;
+			case 2: // avenue
+				v.color[0] = 1.0f;
+				v.color[1] = 1.0f;
+				v.color[2] = 1.0f;
+				v.location[2] = 1.0f;
+				break;
+			case 1: // street
+				v.color[0] = 1.0f;
+				v.color[1] = 1.0f;
+				v.color[2] = 1.0f;
+				v.location[2] = 1.0f;
+				break;
+			default:
+				v.color[0] = 1.0f;
+				v.color[1] = 1.0f;
+				v.color[2] = 1.0f;
+				v.location[2] = 1.0f;
 				break;
 			}
 
@@ -84,8 +155,6 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 				v.color[1] = 0.0f;
 				v.color[2] = 0.0f;
 			}
-
-			v.location[2] = 0.0f;
 
 			v.location[0] = p0.x();
 			v.location[1] = p0.y();
@@ -143,6 +212,13 @@ void RoadGraph::clear() {
 	//bbox.clear();
 
 	modified = true;
+}
+
+void RoadGraph::setWidthPerLane(float widthPerLane) {
+	if (this->widthPerLane != widthPerLane) {
+		this->widthPerLane = widthPerLane;
+		modified = true;
+	}
 }
 
 /**

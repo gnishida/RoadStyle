@@ -18,20 +18,15 @@ public:
 	bool fullyPaired;	// if this edge has a corresponding edge
 
 public:
-	//RoadEdge();
 	RoadEdge(unsigned int lanes, unsigned int type, bool oneWay);
 	~RoadEdge();
 	
-	/*bool isOneWay();
-	int getNumLanes();*/
 	float getLength();
-	//int getType();
 	std::vector<QVector2D> getPolyLine();
 
 	void addPoint(const QVector2D &pt);
-	float getWidth();
+	float getWidth(float widthPerLane);
 
-	//void startFrom(QVector2D start);
 	bool containsPoint(const QVector2D &pos);
 };
 

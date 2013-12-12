@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'RoadStyle.ui'
 **
-** Created: Wed Dec 11 19:25:07 2013
+** Created: Wed Dec 11 21:16:49 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,7 +47,7 @@ public:
     {
         if (RoadStyleClass->objectName().isEmpty())
             RoadStyleClass->setObjectName(QString::fromUtf8("RoadStyleClass"));
-        RoadStyleClass->resize(600, 400);
+        RoadStyleClass->resize(962, 737);
         actionOpen = new QAction(RoadStyleClass);
         actionOpen->setObjectName(QString::fromUtf8("actionOpen"));
         actionExit = new QAction(RoadStyleClass);
@@ -75,7 +75,7 @@ public:
         RoadStyleClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(RoadStyleClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 600, 21));
+        menuBar->setGeometry(QRect(0, 0, 962, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName(QString::fromUtf8("menuFile"));
         menuView = new QMenu(menuBar);

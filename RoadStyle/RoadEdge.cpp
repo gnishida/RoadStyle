@@ -1,12 +1,6 @@
 #include "RoadEdge.h"
 #include "Util.h"
 
-/*RoadEdge::RoadEdge() {
-	this->oneWay = false;
-	this->lanes = 1;
-	this->type = 1;
-}*/
-
 RoadEdge::RoadEdge(unsigned int lanes, unsigned int type, bool oneWay) {
 	this->lanes = lanes;
 	this->type = type;
@@ -22,14 +16,6 @@ RoadEdge::RoadEdge(unsigned int lanes, unsigned int type, bool oneWay) {
 RoadEdge::~RoadEdge() {
 }
 
-/*bool RoadEdge::isOneWay() {
-	return oneWay;
-}
-
-int RoadEdge::getNumLanes() {
-	return lanes;
-}*/
-
 float RoadEdge::getLength() {
 	float length = 0.0f;
 	for (int i = 0; i < polyLine.size() - 1; i++) {
@@ -38,10 +24,6 @@ float RoadEdge::getLength() {
 
 	return length;
 }
-
-/*int RoadEdge::getType() {
-	return type;
-}*/
 
 std::vector<QVector2D> RoadEdge::getPolyLine() {
 	return polyLine;
@@ -56,26 +38,15 @@ void RoadEdge::addPoint(const QVector2D &pt) {
 	polyLine.push_back(pt);
 }
 
-float RoadEdge::getWidth() {
-	if (type >= 2) {
-		return lanes * (oneWay ? 1 : 2) * 3.5f;
-	} else {
-		return lanes * (oneWay ? 1 : 2) * 3.0f;
+float RoadEdge::getWidth(float widthPerLane) {
+	if (type == 1) { // local street
+		return widthPerLane;
+	} else if (type == 2) { // avenue
+		return widthPerLane * 1.5f;
+	} else if (type == 3) { // high way
+		return widthPerLane * 2.0f;
 	}
 }
-
-/**
- * Order the poly line of the road segment by starting from the point that is close to the specified point.
- *
- * @param start			the specified point to start the poly line
- */
-/*void RoadEdge::startFrom(QVector3D start) {
-	if (polyLine.size() == 0) return;
-
-	if ((polyLine[0] - start).lengthSquared() > (polyLine[polyLine.size() - 1] - start).lengthSquared()) {
-		std::reverse(polyLine.begin(), polyLine.end());
-	}
-}*/
 
 /**
  * Check whether the point resides in this road segment.
@@ -88,7 +59,7 @@ bool RoadEdge::containsPoint(const QVector2D &pos) {
 	for (int i = 0; i < polyLine.size() - 1; i++) {
 		QVector2D p0 = polyLine[i];
 		QVector2D p1 = polyLine[i + 1];
-		if (Util::pointSegmentDistanceXY(p0, p1, pos) <= getWidth()) return true;
+		if (Util::pointSegmentDistanceXY(p0, p1, pos) <= getWidth(3.5f)) return true;
 	}
 
 	return false;

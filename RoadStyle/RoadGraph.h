@@ -37,6 +37,7 @@ public:
 	bool modified;
 	std::vector<Vertex> vertices;
 	RoadEdge* selectedEdge;
+	float widthPerLane;
 
 public:
 	RoadGraph();
@@ -46,6 +47,7 @@ public:
 	bool getModified();
 	void setModified();
 	void clear();
+	void setWidthPerLane(float widthperLane);
 
 	QList<RoadEdgeDesc> getOrderedEdgesByImportance();
 
