@@ -52,10 +52,10 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			vec = QVector2D(-vec.y(), vec.x());
 			vec.normalize();
 
-			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.7f;
+			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.7f;
+			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.7f;
+			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.7f;
 
 			if (i > 0) {
 				QVector2D pt0 = edge->polyLine[i - 1];
@@ -63,10 +63,10 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 				vec0 = QVector2D(-vec0.y(), vec0.x());
 				vec0.normalize();
 
-				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.7f;
 
 				float tab, tcd;
 				Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
@@ -79,10 +79,10 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 				vec2 = QVector2D(-vec2.y(), vec2.x());
 				vec2.normalize();
 
-				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.6f;
-				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.7f;
+				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.7f;
 
 				float tab, tcd;
 				Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
