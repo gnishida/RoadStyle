@@ -14,7 +14,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), p
 	camera = new Camera();
 	//camera->setTranslation(-11840.0f, 354100.0f, 100.0f);
 	//camera->setLookAt(-11840.0f, 354100.0f, 0.0f);
-	roadGraph = new RoadGraph(mainWin);
+	roadGraph = new RoadGraph();
 	renderer = new RoadGraphRenderer();
 }
 
@@ -22,26 +22,16 @@ GLWidget::~GLWidget() {
 }
 
 void GLWidget::drawScene() {
-	renderer->render(roadGraph);
+	renderer->render(roadGraph, mainWin);
 }
 
 void GLWidget::loadOSM(QString filename) {
 	roadGraph->clear();
 
-	/*OSMRoadsParser* parser = new OSMRoadsParser(roadGraph);
-
-    QXmlSimpleReader reader;
-    reader.setContentHandler(parser);
-	QFile file(filename);
-	QXmlInputSource source(&file);
-	reader.parse(source);
-
-	roadGraph->reduce();*/
 	FILE* fp = fopen(filename.toUtf8().data(), "rb");
-	roadGraph->load(fp);
+	roadGraph->load(fp, 7);
 
 	camera->setLookAt(0.0f, 0.0f, 0.0f);
-	//camera->setTranslation(0.0f, 0.0f, roadGraph->getRanges().getBBox().size().y());
 	camera->setTranslation(0.0f, 0.0f, 100.0f);
 	updateGL();
 }
@@ -56,8 +46,8 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 	lastPos = event->pos();
 
 	if (event->buttons() & Qt::LeftButton) {
-		QVector3D pos;
-		if (mouseTo3D(event->x(), event->y(), &pos)) {
+		QVector2D pos;
+		if (mouseTo2D(event->x(), event->y(), &pos)) {
 			mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
 			RoadEdge* selectedEdge = roadGraph->select(pos);
 			mainWin->propertyWindow->setRoadEdge(selectedEdge);
@@ -80,13 +70,13 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 	float dy = (float)(event->y() - lastPos.y());
 	float camElevation = camera->getCamElevation();
 
-	if (event->buttons() & Qt::LeftButton) {	// Rotate
+	/*if (event->buttons() & Qt::LeftButton) {	// Rotate
 		setCursor(Qt::SizeVerCursor);
 
 		camera->changeXRotation(dy * 3);
 		camera->changeZRotation(-dx * 3);
 		lastPos = event->pos();
-	} else if (event->buttons() & Qt::MidButton) {
+	} else*/ if (event->buttons() & Qt::MidButton) {
 		camera->changeXYZTranslation(-dx * 10, dy * 10, 0);
 		lastPos = event->pos();
 	} else if (event->buttons() & Qt::RightButton) {	// Zoom
@@ -157,7 +147,7 @@ void GLWidget::paintGL() {
 	drawScene();	
 }
 
-bool GLWidget::mouseTo3D(int x,int y,QVector3D *result) {
+bool GLWidget::mouseTo2D(int x,int y, QVector2D *result) {
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
@@ -188,8 +178,9 @@ bool GLWidget::mouseTo3D(int x,int y,QVector3D *result) {
 		//if(planeIntersectWithLine(rayStar,rayEnd,q1,q2,t,*result)!=0)	return true;
 		return false;
 	}
+
 	result->setX(posX);
 	result->setY(posY);
-	result->setZ(posZ);
+
 	return true;
 }

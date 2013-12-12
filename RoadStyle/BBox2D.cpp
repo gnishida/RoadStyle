@@ -36,6 +36,8 @@ bool BBox2D::contains(const QVector2D &p) {
 
 	if (p.x() > corner1.x()) return false;
 	if (p.y() > corner1.y()) return false;
+
+	return true;
 }
 
 QVector2D BBox2D::minCorner() const {

@@ -1,14 +1,15 @@
 #include "RoadGraphRenderer.h"
+#include "RoadStyle.h"
 #include <QtOpenGL>
 
 RoadGraphRenderer::RoadGraphRenderer() {
 }
 
-void RoadGraphRenderer::render(RoadGraph* object) {
+void RoadGraphRenderer::render(RoadGraph* object, RoadStyle* mainWin) {
 	if (!object->getModified()) {
 		glCallList(dispList);
 	} else {
-		object->generateMesh();
+		object->generateMesh(mainWin->getAttributes()->getBool("showHighways"), mainWin->getAttributes()->getBool("showAvenues"), mainWin->getAttributes()->getBool("showStreets"));
 
 		glDeleteLists(dispList, 1);
 		dispList = glGenLists(1);

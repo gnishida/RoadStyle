@@ -1,6 +1,7 @@
 #include "OSMRoadsParser.h"
 #include "BBox2D.h"
 #include "Util.h"
+#include "GraphUtil.h"
 
 OSMRoadsParser::OSMRoadsParser(RoadGraph *roads) {
 	this->roads = roads;
@@ -184,10 +185,13 @@ void OSMRoadsParser::createRoadEdge() {
 		}
 
 		if (!duplicated) {
+			GraphUtil::addEdge(roads, sourceDesc, destDesc, numLanes, typeRoad, oneWay);
+			/*
 			RoadEdge* e = new RoadEdge(oneWay, numLanes, typeRoad);
 			e->addPoint(vertices[idToActualId[id]].getPt());
 			e->addPoint(vertices[idToActualId[next]].getPt());
 			roads->addEdge(sourceDesc, destDesc, e);
+			*/
 		}
 	}
 }

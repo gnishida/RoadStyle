@@ -11,9 +11,9 @@ void PropertyWindow::setRoadEdge(RoadEdge* selectedEdge) {
 	QString oneWay("");
 
 	if (selectedEdge != NULL) {
-		type.setNum(selectedEdge->getType());
-		numLanes.setNum(selectedEdge->getType());
-		if (selectedEdge->isOneWay()) {
+		type.setNum(selectedEdge->type);
+		numLanes.setNum(selectedEdge->lanes);
+		if (selectedEdge->oneWay) {
 			oneWay = "Yes";
 		} else {
 			oneWay = "No";

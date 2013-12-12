@@ -1,39 +1,49 @@
 #include "RoadEdge.h"
 #include "Util.h"
 
-RoadEdge::RoadEdge() {
+/*RoadEdge::RoadEdge() {
 	this->oneWay = false;
-	this->numLanes = 1;
+	this->lanes = 1;
 	this->type = 1;
-}
+}*/
 
-RoadEdge::RoadEdge(bool oneWay, int numLanes, int type) {
-	this->oneWay = oneWay;
-	this->numLanes = numLanes;
+RoadEdge::RoadEdge(unsigned int lanes, unsigned int type, bool oneWay) {
+	this->lanes = lanes;
 	this->type = type;
+	this->oneWay = oneWay;
+	this->weight = 0.0f;
+	this->valid = true;
+	this->importance = 0.0f;
+	this->group = 0;
+	this->seed = false;
+	this->fullyPaired = false;
 }
 
 RoadEdge::~RoadEdge() {
 }
 
-bool RoadEdge::isOneWay() {
+/*bool RoadEdge::isOneWay() {
 	return oneWay;
 }
 
 int RoadEdge::getNumLanes() {
-	if (type >= 3 && numLanes == 1) return 2;
-	else return numLanes;
-}
+	return lanes;
+}*/
 
 float RoadEdge::getLength() {
+	float length = 0.0f;
+	for (int i = 0; i < polyLine.size() - 1; i++) {
+		length += (polyLine[i + 1] - polyLine[i]).length();
+	}
+
 	return length;
 }
 
-int RoadEdge::getType() {
+/*int RoadEdge::getType() {
 	return type;
-}
+}*/
 
-std::vector<QVector3D> RoadEdge::getPolyLine() {
+std::vector<QVector2D> RoadEdge::getPolyLine() {
 	return polyLine;
 }
 
@@ -42,18 +52,15 @@ std::vector<QVector3D> RoadEdge::getPolyLine() {
  *
  * @param pt		new point to be added
  */
-void RoadEdge::addPoint(const QVector3D &pt) {
-	if (polyLine.size() > 0) {
-		length += (pt - polyLine[polyLine.size() - 1]).length();
-	}
+void RoadEdge::addPoint(const QVector2D &pt) {
 	polyLine.push_back(pt);
 }
 
 float RoadEdge::getWidth() {
 	if (type >= 2) {
-		return numLanes * (oneWay ? 1 : 2) * 3.5f;
+		return lanes * (oneWay ? 1 : 2) * 3.5f;
 	} else {
-		return numLanes * (oneWay ? 1 : 2) * 3.0f;
+		return lanes * (oneWay ? 1 : 2) * 3.0f;
 	}
 }
 
@@ -62,13 +69,13 @@ float RoadEdge::getWidth() {
  *
  * @param start			the specified point to start the poly line
  */
-void RoadEdge::startFrom(QVector3D start) {
+/*void RoadEdge::startFrom(QVector3D start) {
 	if (polyLine.size() == 0) return;
 
 	if ((polyLine[0] - start).lengthSquared() > (polyLine[polyLine.size() - 1] - start).lengthSquared()) {
 		std::reverse(polyLine.begin(), polyLine.end());
 	}
-}
+}*/
 
 /**
  * Check whether the point resides in this road segment.
@@ -77,10 +84,10 @@ void RoadEdge::startFrom(QVector3D start) {
  * @param pos		the point
  * @return			true if the point is inside the road segment, false otherwise
  */
-bool RoadEdge::containsPoint(const QVector3D &pos) {
+bool RoadEdge::containsPoint(const QVector2D &pos) {
 	for (int i = 0; i < polyLine.size() - 1; i++) {
-		QVector3D p0 = polyLine[i];
-		QVector3D p1 = polyLine[i + 1];
+		QVector2D p0 = polyLine[i];
+		QVector2D p1 = polyLine[i + 1];
 		if (Util::pointSegmentDistanceXY(p0, p1, pos) <= getWidth()) return true;
 	}
 

@@ -1,15 +1,17 @@
 #pragma once
 
-#include <qvector3d.h>
+#include <qvector2d.h>
 
 class RoadVertex {
 public:
-	QVector3D pt;
+	QVector2D pt;
+	bool valid;
+	bool virt;
 
 public:
 	RoadVertex();
-	RoadVertex(const QVector3D &pt);
+	RoadVertex(const QVector2D &pt);
 
-	const QVector3D& getPt() const;
+	const QVector2D& getPt() const;
 };
 

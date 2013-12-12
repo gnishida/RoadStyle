@@ -2,8 +2,6 @@
 
 #include "RoadVertex.h"
 #include "RoadEdge.h"
-#include "AABBox.h"
-#include "MapRange.h"
 #include <stdio.h>
 #include <qvector3d.h>
 #include <boost/graph/adjacency_list.hpp>
@@ -14,7 +12,6 @@
 #include <boost/graph/graph_utility.hpp>
 
 using namespace boost;
-
 
 typedef adjacency_list<vecS, vecS, undirectedS, RoadVertex*, RoadEdge*> BGLGraph;
 typedef graph_traits<BGLGraph>::vertex_descriptor RoadVertexDesc;
@@ -35,42 +32,47 @@ typedef struct {
 class RoadStyle;
 
 class RoadGraph {
-private:
-	RoadStyle* mainWin;
+public:
 	BGLGraph graph;
-	//AABBox bbox;
-	MapRange ranges;
 	bool modified;
 	std::vector<Vertex> vertices;
 	RoadEdge* selectedEdge;
 
 public:
-	RoadGraph(RoadStyle* mainWin);
+	RoadGraph();
 	~RoadGraph();
 
-	BGLGraph& getGraph();
-	//void setBBox(AABBox bbox);
-	void setRange(MapRange ranges);
-	void generateMesh();
-	RoadVertexDesc addVertex(RoadVertex* vertex);
-	RoadVertex* getVertex(RoadVertexDesc desc);
-	void removeVertex(RoadVertexDesc desc);
-	bool reduceVertex(RoadVertexDesc desc);
-	RoadEdgeDesc addEdge(RoadVertexDesc v1, RoadVertexDesc v2, RoadEdge* edge);
-	//AABBox& getBBox();
-	MapRange& getRanges();
+	void generateMesh(bool showHighways, bool showAvenues, bool showStreets);
 	bool getModified();
 	void setModified();
 	void clear();
-	void reduce();
 
-	std::vector<std::vector<float> > extractFeatures(QString filename);
-	std::vector<float> extractFeatures(AABBox area);
-	RoadEdge* select(const QVector3D &pos);
+	QList<RoadEdgeDesc> getOrderedEdgesByImportance();
+
+	RoadEdge* select(const QVector2D &pos);
 
 	Vertex getMesh(unsigned int index);
 	unsigned int getNumMeshes();
 
-	void load(FILE* fp);
+	void load(FILE* fp, int roadType);
 };
 
+class LessWeight {
+private:
+	RoadGraph* roads;
+
+public:
+	LessWeight(RoadGraph* roads);
+
+	bool operator()(const RoadEdgeDesc& left, const RoadEdgeDesc& right) const;
+};
+
+class MoreImportantEdge {
+private:
+	RoadGraph* roads;
+
+public:
+	MoreImportantEdge(RoadGraph* roads);
+
+	bool operator()(const RoadEdgeDesc& left, const RoadEdgeDesc& right) const;
+};

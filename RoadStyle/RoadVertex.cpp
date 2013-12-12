@@ -1,13 +1,17 @@
 #include "RoadVertex.h"
 
 RoadVertex::RoadVertex() {
-	this->pt = QVector3D(0.0f, 0.0f, 0.0f);
+	this->pt = QVector2D(0.0f, 0.0f);
+	this->virt = false;
+	this->valid = true;
 }
 
-RoadVertex::RoadVertex(const QVector3D &pt) {
+RoadVertex::RoadVertex(const QVector2D &pt) {
 	this->pt = pt;
+	this->virt = false;
+	this->valid = true;
 }
 
-const QVector3D& RoadVertex::getPt() const {
+const QVector2D& RoadVertex::getPt() const {
 	return pt;
 }

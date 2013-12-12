@@ -2,6 +2,8 @@
 
 #include "RoadGraph.h"
 
+class RoadStyle;
+
 class RoadGraphRenderer {
 private:
 	unsigned int dispList;
@@ -9,7 +11,7 @@ private:
 public:
 	RoadGraphRenderer();
 
-	void render(RoadGraph* object);
+	void render(RoadGraph* object, RoadStyle* mainWin);
 	void _render(RoadGraph* object);
 };
 

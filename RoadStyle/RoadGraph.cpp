@@ -12,132 +12,18 @@
 
 #define SQR(x)		((x) * (x))
 
-RoadGraph::RoadGraph(RoadStyle* mainWin) {
-	this->mainWin = mainWin;
-
+RoadGraph::RoadGraph() {
 	selectedEdge = NULL;
 }
 
 RoadGraph::~RoadGraph() {
 }
 
-BGLGraph& RoadGraph::getGraph() {
-	return graph;
-}
-
-void RoadGraph::setRange(MapRange ranges) {
-	this->ranges = ranges;
-}
-
-void RoadGraph::generateMesh() {
+void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets) {
 	int count = 0;
 	vertices.clear();
 
 	Vertex v;
-
-	// map area
-	BBox2D bbox = ranges.getBBox();
-	QVector2D minCorner = Util::projLatLonToMeter(bbox.minCorner(), bbox.getCenter());
-	QVector2D maxCorner = Util::projLatLonToMeter(bbox.maxCorner(), bbox.getCenter());
-
-	float cellLength = 1000.0f;
-
-	int cntX = 0;
-	for (float x = minCorner.x(); x <= maxCorner.x() - cellLength; x += cellLength, cntX++) {
-		float x2 = x + cellLength;
-		if (x2 > maxCorner.x()) x2 = maxCorner.x();
-
-		int cntY = 0;
-		for (float y = minCorner.y(); y <= maxCorner.y() - cellLength; y += cellLength, cntY++) {
-			float y2 = y + cellLength;
-			if (y2 > maxCorner.y()) y2 = maxCorner.y();
-
-			if ((cntX + cntY) % 2 == 0) {
-				v.color[0] = 0.0f;
-				v.color[1] = 0.0f;
-				v.color[2] = 0.0f;
-			} else {
-				v.color[0] = 0.2f;
-				v.color[1] = 0.2f;
-				v.color[2] = 0.2f;
-			}
-
-			BBox2D area(QVector2D(x, y), QVector2D(x2, y2));
-
-			for (int i = 0; i < ranges.size(); i++) {
-				QVector2D c0 = Util::projLatLonToMeter(ranges.get(i).minCorner(), ranges.getBBox().getCenter());
-				QVector2D c1 = Util::projLatLonToMeter(ranges.get(i).maxCorner(), ranges.getBBox().getCenter());
-				BBox2D range(c0, c1);
-
-				BBox2D b = area.intersect(range);
-
-				v.location[0] = b.minCorner().x();
-				v.location[1] = b.minCorner().y();
-				v.location[2] = -100.0f;
-				v.normal[0] = 0.0f;
-				v.normal[1] = 0.0f;
-				v.normal[2] = 1.0f;
-				vertices.push_back(v);
-
-				v.location[0] = b.maxCorner().x();
-				vertices.push_back(v);
-
-				v.location[1] = b.maxCorner().y();
-				vertices.push_back(v);
-
-				v.location[0] = b.minCorner().x();
-				v.location[1] = b.minCorner().y();
-				vertices.push_back(v);
-
-				v.location[0] = b.maxCorner().x();
-				v.location[1] = b.maxCorner().y();
-				vertices.push_back(v);
-
-				v.location[0] = b.minCorner().x();
-				vertices.push_back(v);
-			}
-		}
-	}
-
-	// road vertex
-	/*
-	//v.color[0] = 1.0f;
-	//v.color[1] = 0.0f;
-	//v.color[2] = 0.0f;
-	RoadVertexIter vi, vend;
-	for (boost::tie(vi, vend) = boost::vertices(graph); vi != vend; ++vi) {
-		RoadVertex* vertex = graph[*vi];
-
-		v.color[0] = (float)(rand() % 255) / 255.0f;
-		v.color[1] = (float)(rand() % 255) / 255.0f;
-		v.color[2] = (float)(rand() % 255) / 255.0f;
-
-		v.location[0] = vertex->getPt().x() - 3.0f;
-		v.location[1] = vertex->getPt().y() - 3.0f;
-		v.location[2] = 10.0f;
-		vertices.push_back(v);
-
-		v.location[0] = vertex->getPt().x() + 3.0f;
-		v.location[1] = vertex->getPt().y() - 3.0f;
-		vertices.push_back(v);
-
-		v.location[0] = vertex->getPt().x() + 3.0f;
-		v.location[1] = vertex->getPt().y() + 3.0f;
-		vertices.push_back(v);
-
-		v.location[0] = vertex->getPt().x() - 3.0f;
-		v.location[1] = vertex->getPt().y() - 3.0f;
-		vertices.push_back(v);
-
-		v.location[0] = vertex->getPt().x() + 3.0f;
-		v.location[1] = vertex->getPt().y() + 3.0f;
-		vertices.push_back(v);
-
-		v.location[0] = vertex->getPt().x() - 3.0f;
-		v.location[1] = vertex->getPt().y() + 3.0f;
-		vertices.push_back(v);
-	}
-	*/
 
 	// road edge
 	RoadEdgeIter ei, eend;
@@ -147,14 +33,14 @@ void RoadGraph::generateMesh() {
 		if (num <= 1) continue;
 
 		// filter the hidden roads
-		if (!mainWin->getAttributes()->getBool("showHighways")) {
-			if (edge->getType() == 3) continue;
+		if (!showHighways) {
+			if (edge->type == 3) continue;
 		}
-		if (!mainWin->getAttributes()->getBool("showAvenues")) {
-			if (edge->getType() == 2) continue;
+		if (!showAvenues) {
+			if (edge->type == 2) continue;
 		}
-		if (!mainWin->getAttributes()->getBool("showStreets")) {
-			if (edge->getType() == 1) continue;
+		if (!showStreets) {
+			if (edge->type == 1) continue;
 		}
 
 		for (int i = 0; i < num - 1; ++i) {
@@ -170,24 +56,21 @@ void RoadGraph::generateMesh() {
 			QVector3D p3 = pt2 + vec * edge->getWidth() / 2.0f;
 			//QVector3D normal = ucore::Util::calculateNormal(p0, p1, p2);
 
-			switch (edge->getType()) {
+			switch (edge->type) {
 			case 3:
 				v.color[0] = 0.53725f;
 				v.color[1] = 0.64313f;
 				v.color[2] = 0.79607f;
-				v.location[2] = mainWin->getAttributes()->getFloat("HighwayHeight");
 				break;
 			case 2: // avenue
 				v.color[0] = 0.86274f;
 				v.color[1] = 0.61960f;
 				v.color[2] = 0.61960f;
-				v.location[2] = mainWin->getAttributes()->getFloat("AvenueHeight");
 				break;
 			case 1: // street
 				v.color[0] = 1.0f;
 				v.color[1] = 1.0f;
 				v.color[2] = 1.0f;
-				v.location[2] = mainWin->getAttributes()->getFloat("StreetHeight");
 				break;
 			default:
 				v.color[0] = 1.0f;
@@ -201,6 +84,8 @@ void RoadGraph::generateMesh() {
 				v.color[1] = 0.0f;
 				v.color[2] = 0.0f;
 			}
+
+			v.location[2] = 0.0f;
 
 			v.location[0] = p0.x();
 			v.location[1] = p0.y();
@@ -233,90 +118,6 @@ void RoadGraph::generateMesh() {
 	modified = false;
 }
 
-RoadVertexDesc RoadGraph::addVertex(RoadVertex* vertex) {
-	RoadVertexDesc desc = boost::add_vertex(graph);
-	graph[desc] = vertex;
-	//bbox.addPoint(vertex->getPt());
-
-	modified = true;
-
-	return desc;
-}
-
-RoadVertex* RoadGraph::getVertex(RoadVertexDesc desc) {
-	return graph[desc];
-}
-
-void RoadGraph::removeVertex(RoadVertexDesc desc) {
-	RoadOutEdgeIter ei, ei_end;
-	for (boost::tie(ei, ei_end) = out_edges(desc, graph); ei != ei_end; ++ei) {
-		boost::remove_edge(*ei, graph);
-	}
-
-	boost::remove_vertex(desc, graph);
-}
-
-bool RoadGraph::reduceVertex(RoadVertexDesc desc) {
-	int count = 0;
-	RoadVertexDesc vd[2];
-	RoadEdgeDesc ed[2];
-	RoadEdge* edges[2];
-
-	RoadOutEdgeIter ei, ei_end;
-	for (boost::tie(ei, ei_end) = out_edges(desc, graph); ei != ei_end; ++ei, ++count) {
-		vd[count] = boost::target(*ei, graph);
-		ed[count] = *ei;
-		edges[count] = graph[*ei];
-	}
-
-	if (count != 2) {
-		int k = 0;
-	}
-
-	if (edges[0]->getType() != edges[1]->getType()) return false;
-
-	RoadEdge* new_edge = new RoadEdge(edges[0]->isOneWay(), edges[0]->getNumLanes(), edges[0]->getType());
-	edges[0]->startFrom(graph[vd[0]]->getPt());
-	edges[1]->startFrom(graph[desc]->getPt());
-	
-	for (int i = 0; i < edges[0]->getPolyLine().size(); i++) {
-		new_edge->addPoint(edges[0]->getPolyLine()[i]);
-	}
-	for (int i = 1; i < edges[1]->getPolyLine().size(); i++) {
-		new_edge->addPoint(edges[1]->getPolyLine()[i]);
-	}
-	addEdge(vd[0], vd[1], new_edge);
-
-	boost::remove_edge(vd[0], desc, graph);
-	boost::remove_edge(vd[1], desc, graph);
-	delete edges[0];
-	if (edges[1] != edges[0]) delete edges[1];
-
-	RoadVertex* vertex = graph[desc];
-	boost::remove_vertex(desc, graph);
-	delete vertex;
-
-	return true;
-}
-
-RoadEdgeDesc RoadGraph::addEdge(RoadVertexDesc v1, RoadVertexDesc v2, RoadEdge* edge) {
-	std::pair<RoadEdgeDesc, bool> edge_pair = boost::add_edge(v1, v2, graph);
-	graph[edge_pair.first] = edge;
-	modified = true;
-
-	return edge_pair.first;
-}
-
-/*
-AABBox& RoadGraph::getBBox() {
-	return bbox;
-}
-*/
-
-MapRange& RoadGraph::getRanges() {
-	return ranges;
-}
-
 bool RoadGraph::getModified() {
 	return modified;
 }
@@ -344,24 +145,52 @@ void RoadGraph::clear() {
 	modified = true;
 }
 
-void RoadGraph::reduce() {
-	// reduce the graph by removing the vertices which have two outing edges.
-	RoadVertexIter vi, vend;
-	bool deleted = false;
-	do {
-		deleted = false;
-		for (boost::tie(vi, vend) = boost::vertices(graph); vi != vend; ++vi) {
-			RoadVertex* v = graph[*vi];
+/**
+ * Importanceに基づいて、エッジを並べて返却する。
+ */
+QList<RoadEdgeDesc> RoadGraph::getOrderedEdgesByImportance() {
+	std::vector<RoadEdgeDesc> data;
+	//std::vector<int> data;
 
-			int degree = boost::degree(*vi, graph);
-			if (degree == 2) {
-				if (reduceVertex(*vi)) {
-					deleted = true;
-					break;
-				}
-			}
-		}
-	} while (deleted);
+	RoadEdgeIter ei, eend;
+	int count = 0;
+	for (boost::tie(ei, eend) = boost::edges(graph); ei != eend; ++ei) {
+		if (!graph[*ei]->valid) continue;
+
+		data.push_back(*ei);
+		//data.push_back(count);
+		count++;
+	}
+
+	std::sort(data.begin(), data.end(), MoreImportantEdge(this));
+
+	QList<RoadEdgeDesc> ret;
+	for (int i = 0; i < data.size(); i++) {
+		//ret.push_back(GraphUtil::getEdge(this, data[i]));
+		ret.push_back(data[i]);
+	}
+
+	return ret;
+}
+
+LessWeight::LessWeight(RoadGraph* roads) {
+	this->roads = roads;
+}
+
+bool LessWeight::operator()(const RoadEdgeDesc& left, const RoadEdgeDesc& right) const {
+	return roads->graph[left]->lanes < roads->graph[right]->lanes;
+}
+
+MoreImportantEdge::MoreImportantEdge(RoadGraph* roads) {
+	this->roads = roads;
+}
+
+//bool MoreImportantEdge::operator()(const int& left, const int& right) const {
+bool MoreImportantEdge::operator()(const RoadEdgeDesc& left, const RoadEdgeDesc& right) const {
+	RoadEdge* e1 = roads->graph[left];
+	RoadEdge* e2 = roads->graph[right];
+
+	return e1->importance > e2->importance;
 }
 
 /**
@@ -370,7 +199,7 @@ void RoadGraph::reduce() {
  * @param pos		the specified position
  * @return			the selected road edge
  */
-RoadEdge* RoadGraph::select(const QVector3D &pos) {
+RoadEdge* RoadGraph::select(const QVector2D &pos) {
 	RoadEdgeIter ei, eend;
 	for (boost::tie(ei, eend) = boost::edges(graph); ei != eend; ++ei) {
 		if (graph[*ei]->containsPoint(pos)) {
@@ -391,15 +220,16 @@ unsigned int RoadGraph::getNumMeshes() {
 	return vertices.size();
 }
 
-void RoadGraph::load(FILE* fp) {
+void RoadGraph::load(FILE* fp, int roadType) {
 	clear();
 
 	QMap<uint, RoadVertexDesc> idToDesc;
 
+	// Read the number of vertices
 	unsigned int nVertices;
 	fread(&nVertices, sizeof(unsigned int), 1, fp);
 
-	// 頂点情報を読み込む
+	// Read each vertex's information: desc, x, and y.
 	for (int i = 0; i < nVertices; i++) {
 		RoadVertexDesc id;
 		float x, y;
@@ -407,9 +237,7 @@ void RoadGraph::load(FILE* fp) {
 		fread(&x, sizeof(float), 1, fp);
 		fread(&y, sizeof(float), 1, fp);
 
-		RoadVertex* vertex = new RoadVertex(QVector3D(x, y, 0.0f));
-		//vertex->pt.setX(x);
-		//vertex->pt.setY(y);
+		RoadVertex* vertex = new RoadVertex(QVector2D(x, y));
 
 		RoadVertexDesc desc = boost::add_vertex(graph);
 		graph[desc] = vertex;
@@ -417,12 +245,13 @@ void RoadGraph::load(FILE* fp) {
 		idToDesc[id] = desc;
 	}
 
+	// Read the number of edges
 	unsigned int nEdges;
 	fread(&nEdges, sizeof(unsigned int), 1, fp);
 
-	// エッジ情報を読み込む
+	// Read each edge's information: the descs of two vertices, road type, the number of lanes, the number of points along the polyline, and the coordinate of each point along the polyline.
 	for (int i = 0; i < nEdges; i++) {
-		RoadEdge* edge = new RoadEdge();
+		RoadEdge* edge = new RoadEdge(1, 1, false);
 
 		RoadVertexDesc id1, id2;
 		fread(&id1, sizeof(RoadVertexDesc), 1, fp);
@@ -432,7 +261,7 @@ void RoadGraph::load(FILE* fp) {
 		RoadVertexDesc tgt = idToDesc[id2];
 
 		fread(&edge->type, sizeof(unsigned int), 1, fp);
-		fread(&edge->numLanes, sizeof(unsigned int), 1, fp);
+		fread(&edge->lanes, sizeof(unsigned int), 1, fp);
 		fread(&edge->oneWay, sizeof(unsigned int), 1, fp);
 
 		unsigned int nPoints;
@@ -442,11 +271,17 @@ void RoadGraph::load(FILE* fp) {
 			float x, y;
 			fread(&x, sizeof(float), 1, fp);
 			fread(&y, sizeof(float), 1, fp);
-			edge->addPoint(QVector3D(x, y, 0.0f));
+
+			edge->addPoint(QVector2D(x, y));
 		}
 
-		std::pair<RoadEdgeDesc, bool> edge_pair = boost::add_edge(src, tgt, graph);
-		graph[edge_pair.first] = edge;
+		// 指定されたタイプの道路エッジのみを読み込む
+		if (((int)powf(2, (edge->type - 1)) & roadType)) {
+			std::pair<RoadEdgeDesc, bool> edge_pair = boost::add_edge(src, tgt, graph);
+			graph[edge_pair.first] = edge;
+		} else {
+			delete edge;
+		}
 	}
 
 	modified = true;
