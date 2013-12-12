@@ -29,8 +29,10 @@ public:
 	BGLGraph graph;
 	bool modified;
 	std::vector<Renderable> renderables;
-	RoadEdge* selectedEdge;
+
 	RoadVertex* selectedVertex;
+	RoadEdge* selectedEdge;
+	int selectedEdgeIndex;
 	float widthPerLane;
 
 public:

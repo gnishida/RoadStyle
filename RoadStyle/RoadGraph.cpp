@@ -104,17 +104,18 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		addMeshFromEdge(&renderables[0], edge, 1.0f, color, height);
 	}
 
+	renderables.push_back(Renderable(GL_POINTS, 20.0f));
+
 	// if a vertex is selected, draw a point
 	if (selectedVertex != NULL) {
 		Vertex v;
 
-		renderables.push_back(Renderable(GL_POINTS, 20.0f));
 		v.location[0] = selectedVertex->pt.x();
 		v.location[1] = selectedVertex->pt.y();
 		v.location[2] = 1.0f;
-		v.color[0] = 0.0f;
+		v.color[0] = 1.0f;
 		v.color[1] = 0.0f;
-		v.color[2] = 1.0f;
+		v.color[2] = 0.0f;
 		v.normal[0] = 0.0f;
 		v.normal[1] = 0.0f;
 		v.normal[2] = 1.0f;
@@ -143,19 +144,24 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		}
 
 		// draw points along the edge poly line
-		renderables.push_back(Renderable(GL_POINTS, 10.0f));
 		for (int i = 0; i < selectedEdge->polyLine.size(); i++) {
 			v.location[0] = selectedEdge->polyLine[i].x();
 			v.location[1] = selectedEdge->polyLine[i].y();
 			v.location[2] = 1.0f;
-			v.color[0] = 0.0f;
-			v.color[1] = 0.0f;
-			v.color[2] = 1.0f;
+			if (i == selectedEdgeIndex) {
+				v.color[0] = 1.0f;
+				v.color[1] = 0.0f;
+				v.color[2] = 0.0f;
+			} else {
+				v.color[0] = 0.0f;
+				v.color[1] = 0.0f;
+				v.color[2] = 1.0f;
+			}
 			v.normal[0] = 0.0f;
 			v.normal[1] = 0.0f;
 			v.normal[2] = 1.0f;
 
-			renderables[3].vertices.push_back(v);
+			renderables[1].vertices.push_back(v);
 		}
 	}
 
@@ -339,7 +345,7 @@ RoadEdge* RoadGraph::selectEdge(const QVector2D &pos) {
 
 	RoadEdgeIter ei, eend;
 	for (boost::tie(ei, eend) = boost::edges(graph); ei != eend; ++ei) {
-		if (graph[*ei]->containsPoint(pos, widthPerLane)) {
+		if (graph[*ei]->containsPoint(pos, widthPerLane, selectedEdgeIndex)) {
 			selectedEdge = graph[*ei];
 			return selectedEdge;
 		}
@@ -362,7 +368,7 @@ RoadVertex* RoadGraph::selectVertex(const QVector2D &pos) {
 	RoadEdgeIter ei, eend;
 	for (boost::tie(ei, eend) = boost::edges(graph); ei != eend; ++ei) {
 		RoadVertexDesc desc;
-		if (GraphUtil::getVertex(this, pos, 10.0f, desc)) {
+		if (GraphUtil::getVertex(this, pos, 5.0f, desc)) {
 			selectedVertex = graph[desc];
 			selectedEdge = NULL;
 			return selectedVertex;

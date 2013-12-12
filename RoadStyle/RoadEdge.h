@@ -27,6 +27,6 @@ public:
 	void addPoint(const QVector2D &pt);
 	float getWidth(float widthPerLane);
 
-	bool containsPoint(const QVector2D &pos, float widthPerLane);
+	bool containsPoint(const QVector2D &pos, float widthPerLane, int& index);
 };
 

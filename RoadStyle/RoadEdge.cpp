@@ -55,11 +55,14 @@ float RoadEdge::getWidth(float widthPerLane) {
  * @param pos		the point
  * @return			true if the point is inside the road segment, false otherwise
  */
-bool RoadEdge::containsPoint(const QVector2D &pos, float widthPerLane) {
+bool RoadEdge::containsPoint(const QVector2D &pos, float widthPerLane, int& index) {
 	for (int i = 0; i < polyLine.size() - 1; i++) {
 		QVector2D p0 = polyLine[i];
 		QVector2D p1 = polyLine[i + 1];
-		if (Util::pointSegmentDistanceXY(p0, p1, pos) <= getWidth(widthPerLane)) return true;
+		if (Util::pointSegmentDistanceXY(p0, p1, pos) <= getWidth(widthPerLane)) {
+			index = i;
+			return true;
+		}
 	}
 
 	return false;
