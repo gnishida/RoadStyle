@@ -7,6 +7,11 @@ PropertyWindow::PropertyWindow(RoadStyle* mainWin) : QDockWidget("Property", (QW
 	ui.setupUi(this);
 
 	ui.lineEditSimplifyThreshold->setText("10");
+	ui.pushButtonModeView->setDown(true);
+
+	connect(ui.pushButtonModeView, SIGNAL(clicked(bool)), this, SLOT(modeView(bool)));
+	connect(ui.pushButtonModeSketch, SIGNAL(clicked(bool)), this, SLOT(modeSketch(bool)));
+	connect(ui.pushButtonModeSelect, SIGNAL(clicked(bool)), this, SLOT(modeSelect(bool)));
 	connect(ui.pushButtonSimplify, SIGNAL(clicked()), this, SLOT(simplify()));
 
 	hide();
@@ -33,6 +38,27 @@ void PropertyWindow::setRoadEdge(RoadEdge* selectedEdge) {
 }
 
 /**
+ * Update the up/down appearance of buttons according to the current mode.
+ */
+void PropertyWindow::updateModeButtons() {
+	ui.pushButtonModeView->setDown(false);
+	ui.pushButtonModeSketch->setDown(false);
+	ui.pushButtonModeSelect->setDown(false);
+
+	switch (mainWin->mode) {
+	case RoadStyle::MODE_VIEW:
+		ui.pushButtonModeView->setDown(true);
+		break;
+	case RoadStyle::MODE_SKETCH:
+		ui.pushButtonModeSketch->setDown(true);
+		break;
+	case RoadStyle::MODE_SELECT:
+		ui.pushButtonModeSelect->setDown(true);
+		break;
+	}
+}
+
+/**
  * Event handler for button [simplify]
  */
 void PropertyWindow::simplify() {
@@ -41,4 +67,28 @@ void PropertyWindow::simplify() {
 	GraphUtil::simplify(mainWin->glWidget->roads, threshold);
 	GraphUtil::clean(mainWin->glWidget->roads);
 	mainWin->glWidget->updateGL();
+}
+
+/**
+ * Change the mode to "View" mode.
+ */
+void PropertyWindow::modeView(bool flag) {
+	mainWin->mode = RoadStyle::MODE_VIEW;
+	updateModeButtons();
+}
+
+/**
+ * Change the mode to "Sketch" mode.
+ */
+void PropertyWindow::modeSketch(bool flag) {
+	mainWin->mode = RoadStyle::MODE_SKETCH;
+	updateModeButtons();
+}
+
+/**
+ * Change the mode to "Select" mode.
+ */
+void PropertyWindow::modeSelect(bool flag) {
+	mainWin->mode = RoadStyle::MODE_SELECT;
+	updateModeButtons();
 }

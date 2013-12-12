@@ -17,8 +17,12 @@ public:
 	PropertyWindow(RoadStyle* mainWin);
 
 	void setRoadEdge(RoadEdge* selectedEdge);
+	void updateModeButtons();
 
 public slots:
 	void simplify();
+	void modeView(bool flag);
+	void modeSketch(bool flag);
+	void modeSelect(bool flag);
 };
 

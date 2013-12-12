@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RoadGraph.h"
+#include "Renderable.h"
 
 class RoadStyle;
 
@@ -11,7 +12,7 @@ private:
 public:
 	RoadGraphRenderer();
 
-	void render(RoadGraph* object, RoadStyle* mainWin);
-	void _render(RoadGraph* object);
+	void render(std::vector<Renderable>& renderables);
+	void _render(std::vector<Renderable>& renderables);
 };
 

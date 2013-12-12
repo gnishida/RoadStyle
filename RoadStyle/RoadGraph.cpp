@@ -23,7 +23,9 @@ RoadGraph::~RoadGraph() {
 void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets) {
 	renderables.clear();
 
-	renderables.push_back(Renderable(GL_TRIANGLES));
+	renderables.push_back(Renderable(GL_TRIANGLES));	// for local streets
+	renderables.push_back(Renderable(GL_TRIANGLES));	// for avenues
+	renderables.push_back(Renderable(GL_TRIANGLES));	// for highways
 
 	// road edge
 	RoadEdgeIter ei, eend;
@@ -68,7 +70,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		}
 
 		// draw the border of the road segment
-		addMeshFromEdge(&renderables[0], edge, 1.4f, color, 0.0f);
+		addMeshFromEdge(&renderables[edge->type - 1], edge, 1.4f, color, 0.0f);
 
 		float height;
 		switch (edge->type) {
@@ -99,7 +101,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		}
 
 		// draw the road segment
-		addMeshFromEdge(&renderables[0], edge, 1.0f, color, height);
+		addMeshFromEdge(&renderables[edge->type - 1], edge, 1.0f, color, height);
 	}
 
 	// if a road segment is selected, draw a line with all the points along the poly line
@@ -119,7 +121,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			v.normal[1] = 0.0f;
 			v.normal[2] = 1.0f;
 
-			renderables[1].vertices.push_back(v);
+			renderables[3].vertices.push_back(v);
 		}
 
 		// draw points along the edge poly line
@@ -135,7 +137,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			v.normal[1] = 0.0f;
 			v.normal[2] = 1.0f;
 
-			renderables[2].vertices.push_back(v);
+			renderables[4].vertices.push_back(v);
 		}
 	}
 

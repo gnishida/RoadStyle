@@ -23,6 +23,8 @@ RoadStyle::RoadStyle(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, fl
 	attributes->set("AvenueHeight", 0.5f);
 	attributes->set("StreetHeight", 0.0f);
 
+	mode = MODE_VIEW;
+
 	glWidget = new GLWidget(this);
 	this->setCentralWidget(glWidget);
 }

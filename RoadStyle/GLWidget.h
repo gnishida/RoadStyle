@@ -14,7 +14,8 @@ public:
 	RoadStyle* mainWin;
 	Camera* camera;
 	RoadGraph* roads;
-	RoadGraphRenderer* renderer;
+	RoadGraphRenderer* roadsRenderer;
+	RoadGraphRenderer* sketchRenderer;
 	QPoint lastPos;
 
 public:

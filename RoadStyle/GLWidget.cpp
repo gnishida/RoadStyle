@@ -16,7 +16,8 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), p
 	//camera->setTranslation(-11840.0f, 354100.0f, 100.0f);
 	//camera->setLookAt(-11840.0f, 354100.0f, 0.0f);
 	roads = new RoadGraph();
-	renderer = new RoadGraphRenderer();
+	roadsRenderer = new RoadGraphRenderer();
+	sketchRenderer = new RoadGraphRenderer();
 
 	// set up the camera
 	camera->setLookAt(0.0f, 0.0f, 0.0f);
@@ -30,7 +31,8 @@ GLWidget::~GLWidget() {
 }
 
 void GLWidget::drawScene() {
-	renderer->render(roads, mainWin);
+	roads->generateMesh(mainWin->getAttributes()->getBool("showHighways"), mainWin->getAttributes()->getBool("showAvenues"), mainWin->getAttributes()->getBool("showStreets"));
+	roadsRenderer->render(roads->renderables);
 }
 
 void GLWidget::loadOSM(QString filename) {
@@ -50,10 +52,17 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 	if (event->buttons() & Qt::LeftButton) {
 		QVector2D pos;
 		mouseTo2D(event->x(), event->y(), &pos);
-
 		mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
-		RoadEdge* selectedEdge = roads->select(pos);
-		mainWin->propertyWindow->setRoadEdge(selectedEdge);
+
+		if (mainWin->mode == RoadStyle::MODE_VIEW) {
+			// select the edge close to the point
+			RoadEdge* selectedEdge = roads->select(pos);
+			mainWin->propertyWindow->setRoadEdge(selectedEdge);
+		} else if (mainWin->mode == RoadStyle::MODE_SKETCH) {
+			// put the vertex of a line
+
+		}
+
 		updateGL();
 	}
 }
