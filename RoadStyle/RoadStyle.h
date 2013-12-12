@@ -27,7 +27,8 @@ public:
 	Attributes* getAttributes();
 
 public slots:
-	void open();
+	void newRoad();
+	void openRoad();
 	void showHighways(bool flag);
 	void showAvenues(bool flag);
 	void showStreets(bool flag);

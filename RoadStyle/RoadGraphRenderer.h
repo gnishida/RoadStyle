@@ -6,13 +6,12 @@
 class RoadStyle;
 
 class RoadGraphRenderer {
-private:
+public:
 	unsigned int dispList;
 
 public:
 	RoadGraphRenderer();
 
 	void render(std::vector<Renderable>& renderables);
-	void _render(std::vector<Renderable>& renderables);
 };
 

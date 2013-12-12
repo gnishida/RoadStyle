@@ -175,6 +175,7 @@
     <ClCompile Include="RoadGraphRenderer.cpp" />
     <ClCompile Include="RoadStyle.cpp" />
     <ClCompile Include="RoadVertex.cpp" />
+    <ClCompile Include="Sketch.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +258,7 @@
     <ClInclude Include="RoadGraph.h" />
     <ClInclude Include="RoadGraphRenderer.h" />
     <ClInclude Include="RoadVertex.h" />
+    <ClInclude Include="Sketch.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'PropertyWindow.ui'
 **
-** Created: Thu Dec 12 14:41:27 2013
+** Created: Thu Dec 12 17:03:26 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -41,25 +41,27 @@ public:
     QLabel *label_3;
     QLineEdit *lineEditOneWay;
     QPushButton *pushButtonModeSelect;
+    QPushButton *pushButtonClear;
+    QPushButton *pushButtonMakeRoad;
 
     void setupUi(QDockWidget *PropertyWindow)
     {
         if (PropertyWindow->objectName().isEmpty())
             PropertyWindow->setObjectName(QString::fromUtf8("PropertyWindow"));
-        PropertyWindow->resize(192, 411);
-        PropertyWindow->setMinimumSize(QSize(150, 240));
+        PropertyWindow->resize(192, 563);
+        PropertyWindow->setMinimumSize(QSize(192, 240));
         PropertyWindow->setStyleSheet(QString::fromUtf8("background-color: rgb(181, 181, 181);"));
         dockWidgetContents = new QWidget();
         dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
         pushButtonSimplify = new QPushButton(dockWidgetContents);
         pushButtonSimplify->setObjectName(QString::fromUtf8("pushButtonSimplify"));
-        pushButtonSimplify->setGeometry(QRect(20, 340, 151, 31));
+        pushButtonSimplify->setGeometry(QRect(20, 480, 151, 31));
         lineEditSimplifyThreshold = new QLineEdit(dockWidgetContents);
         lineEditSimplifyThreshold->setObjectName(QString::fromUtf8("lineEditSimplifyThreshold"));
-        lineEditSimplifyThreshold->setGeometry(QRect(100, 310, 71, 20));
+        lineEditSimplifyThreshold->setGeometry(QRect(100, 450, 71, 20));
         label_4 = new QLabel(dockWidgetContents);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(20, 310, 46, 21));
+        label_4->setGeometry(QRect(20, 450, 46, 21));
         pushButtonModeSketch = new QPushButton(dockWidgetContents);
         pushButtonModeSketch->setObjectName(QString::fromUtf8("pushButtonModeSketch"));
         pushButtonModeSketch->setGeometry(QRect(70, 10, 51, 51));
@@ -68,7 +70,7 @@ public:
         pushButtonModeView->setGeometry(QRect(10, 10, 51, 51));
         groupBox = new QGroupBox(dockWidgetContents);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 100, 171, 111));
+        groupBox->setGeometry(QRect(10, 220, 171, 111));
         label = new QLabel(groupBox);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 20, 31, 16));
@@ -90,6 +92,12 @@ public:
         pushButtonModeSelect = new QPushButton(dockWidgetContents);
         pushButtonModeSelect->setObjectName(QString::fromUtf8("pushButtonModeSelect"));
         pushButtonModeSelect->setGeometry(QRect(130, 10, 51, 51));
+        pushButtonClear = new QPushButton(dockWidgetContents);
+        pushButtonClear->setObjectName(QString::fromUtf8("pushButtonClear"));
+        pushButtonClear->setGeometry(QRect(20, 110, 151, 31));
+        pushButtonMakeRoad = new QPushButton(dockWidgetContents);
+        pushButtonMakeRoad->setObjectName(QString::fromUtf8("pushButtonMakeRoad"));
+        pushButtonMakeRoad->setGeometry(QRect(20, 150, 151, 31));
         PropertyWindow->setWidget(dockWidgetContents);
 
         retranslateUi(PropertyWindow);
@@ -108,6 +116,8 @@ public:
         label_2->setText(QApplication::translate("PropertyWindow", "Lanes", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("PropertyWindow", "One Way", 0, QApplication::UnicodeUTF8));
         pushButtonModeSelect->setText(QApplication::translate("PropertyWindow", "Select", 0, QApplication::UnicodeUTF8));
+        pushButtonClear->setText(QApplication::translate("PropertyWindow", "Clear", 0, QApplication::UnicodeUTF8));
+        pushButtonMakeRoad->setText(QApplication::translate("PropertyWindow", "Make Roads", 0, QApplication::UnicodeUTF8));
         Q_UNUSED(PropertyWindow);
     } // retranslateUi
 

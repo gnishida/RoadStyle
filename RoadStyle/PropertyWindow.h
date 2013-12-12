@@ -20,9 +20,11 @@ public:
 	void updateModeButtons();
 
 public slots:
-	void simplify();
 	void modeView(bool flag);
 	void modeSketch(bool flag);
 	void modeSelect(bool flag);
+	void clear();
+	void makeRoad();
+	void simplify();
 };
 

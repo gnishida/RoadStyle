@@ -6,22 +6,6 @@ RoadGraphRenderer::RoadGraphRenderer() {
 }
 
 void RoadGraphRenderer::render(std::vector<Renderable>& renderables) {
-	/*if (!object->getModified()) {
-		glCallList(dispList);
-	} else {
-		object->generateMesh(mainWin->getAttributes()->getBool("showHighways"), mainWin->getAttributes()->getBool("showAvenues"), mainWin->getAttributes()->getBool("showStreets"));
-		*/
-		//glDeleteLists(dispList, 1);
-		//dispList = glGenLists(1);
-		//glNewList(dispList, GL_COMPILE_AND_EXECUTE);
-
-		_render(renderables);
-
-		//glEndList();
-	//}
-}
-
-void RoadGraphRenderer::_render(std::vector<Renderable>& renderables) {
 	for (int i = 0; i < renderables.size(); i++) {
 		if (renderables[i].type == GL_LINES || renderables[i].type == GL_LINE_STRIP) {
 			glLineWidth(renderables[i].size);

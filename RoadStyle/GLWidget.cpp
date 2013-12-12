@@ -12,14 +12,13 @@
 
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), parent) {
 	mainWin = (RoadStyle*)parent;
-	camera = new Camera();
-	//camera->setTranslation(-11840.0f, 354100.0f, 100.0f);
-	//camera->setLookAt(-11840.0f, 354100.0f, 0.0f);
+
 	roads = new RoadGraph();
-	roadsRenderer = new RoadGraphRenderer();
-	sketchRenderer = new RoadGraphRenderer();
+	sketch = new Sketch();
+	renderer = new RoadGraphRenderer();
 
 	// set up the camera
+	camera = new Camera();
 	camera->setLookAt(0.0f, 0.0f, 0.0f);
 	camera->setTranslation(0.0f, 0.0f, 150.0f);
 
@@ -31,15 +30,45 @@ GLWidget::~GLWidget() {
 }
 
 void GLWidget::drawScene() {
+	// draw the road graph
 	roads->generateMesh(mainWin->getAttributes()->getBool("showHighways"), mainWin->getAttributes()->getBool("showAvenues"), mainWin->getAttributes()->getBool("showStreets"));
-	roadsRenderer->render(roads->renderables);
+	renderer->render(roads->renderables);
+
+	// draw the sketch
+	sketch->generateSketchMesh();
+	renderer->render(sketch->renderables);
 }
 
-void GLWidget::loadOSM(QString filename) {
+/**
+ * Start a new road from scratch.
+ */
+void GLWidget::newRoad() {
+	roads->clear();
+
+	updateGL();
+}
+
+/**
+ * Open a road from the specified file.
+ */
+void GLWidget::openRoad(QString filename) {
 	roads->clear();
 
 	FILE* fp = fopen(filename.toUtf8().data(), "rb");
 	roads->load(fp, 7);
+
+	updateGL();
+}
+
+/**
+ * Make a road graph from the sketch.
+ */
+void GLWidget::makeRoadsFromSketch() {
+	RoadGraph* temp = sketch->makeRoads();
+	sketch->clear();
+
+	GraphUtil::mergeRoads(roads, temp);
+	delete temp;
 
 	updateGL();
 }
@@ -59,8 +88,23 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 			RoadEdge* selectedEdge = roads->select(pos);
 			mainWin->propertyWindow->setRoadEdge(selectedEdge);
 		} else if (mainWin->mode == RoadStyle::MODE_SKETCH) {
-			// put the vertex of a line
+			RoadVertexDesc v1_desc;
+			if (!GraphUtil::getVertex(sketch, pos, 10.0f, v1_desc)) {
+				// If there is a vertex close to the point, don't add new vertex. Otherwise, add a new vertex.
+				RoadVertex* v1 = new RoadVertex(pos);
+				v1_desc = boost::add_vertex(sketch->graph);
+				sketch->graph[v1_desc] = v1;
+			}
 
+			// add the 2nd vertex of a line
+			RoadVertex* v2 = new RoadVertex(pos);
+			RoadVertexDesc v2_desc = boost::add_vertex(sketch->graph);
+			sketch->graph[v2_desc] = v2;
+
+			sketch->curVertex = v2_desc;
+
+			// add an edge
+			sketch->curEdge = GraphUtil::addEdge(sketch, v1_desc, v2_desc, 1, 1, false);
 		}
 
 		updateGL();
@@ -68,12 +112,21 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
+	if (mainWin->mode == RoadStyle::MODE_SKETCH) {
+		QVector2D pos;
+		mouseTo2D(event->x(), event->y(), &pos);
+
+		RoadVertexDesc v2_desc;
+		if (GraphUtil::getVertex(sketch, pos, 10.0f, sketch->curVertex, v2_desc)) {
+			// If there is a vertex close to the point, snap the point to the nearest vertex
+			GraphUtil::snapVertex(sketch, sketch->curVertex, v2_desc);
+		}
+	}
+
 	event->ignore();
 
 	setCursor(Qt::ArrowCursor);
 	updateGL();
-
-	return;
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -81,10 +134,20 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 	float dy = (float)(event->y() - lastPos.y());
 	float camElevation = camera->getCamElevation();
 
-	if (event->buttons() & Qt::LeftButton) {			// Shift
+	lastPos = event->pos();
+
+	if (event->buttons() & Qt::LeftButton) {	
+		if (mainWin->mode == RoadStyle::MODE_VIEW) { // Shift the camera
+			camera->changeXYZTranslation(-dx * camera->dz * 0.001f, dy * camera->dz * 0.001f, 0);
+		} else if (mainWin->mode == RoadStyle::MODE_SKETCH) { // Draw a sketch line
+			QVector2D pos;
+			mouseTo2D(event->x(), event->y(), &pos);
+
+			GraphUtil::moveVertex(sketch, sketch->curVertex, pos);
+		}
+	} else if(event->buttons() & Qt::MidButton) {   // Shift the camera
 		camera->changeXYZTranslation(-dx * camera->dz * 0.001f, dy * camera->dz * 0.001f, 0);
-		lastPos = event->pos();
-	} else if (event->buttons() & Qt::RightButton) {	// Zoom
+	} else if (event->buttons() & Qt::RightButton) { // Zoom the camera
 		setCursor(Qt::SizeVerCursor);
 
 		camera->changeXYZTranslation(0, 0, -dy * 10);

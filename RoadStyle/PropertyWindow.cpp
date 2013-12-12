@@ -7,11 +7,17 @@ PropertyWindow::PropertyWindow(RoadStyle* mainWin) : QDockWidget("Property", (QW
 	ui.setupUi(this);
 
 	ui.lineEditSimplifyThreshold->setText("10");
-	ui.pushButtonModeView->setDown(true);
+	ui.pushButtonModeView->setChecked(true);
+
+	ui.pushButtonModeView->setCheckable(true);
+	ui.pushButtonModeSketch->setCheckable(true);
+	ui.pushButtonModeSelect->setCheckable(true);
 
 	connect(ui.pushButtonModeView, SIGNAL(clicked(bool)), this, SLOT(modeView(bool)));
 	connect(ui.pushButtonModeSketch, SIGNAL(clicked(bool)), this, SLOT(modeSketch(bool)));
 	connect(ui.pushButtonModeSelect, SIGNAL(clicked(bool)), this, SLOT(modeSelect(bool)));
+	connect(ui.pushButtonClear, SIGNAL(clicked()), this, SLOT(clear()));
+	connect(ui.pushButtonMakeRoad, SIGNAL(clicked()), this, SLOT(makeRoad()));
 	connect(ui.pushButtonSimplify, SIGNAL(clicked()), this, SLOT(simplify()));
 
 	hide();
@@ -41,32 +47,21 @@ void PropertyWindow::setRoadEdge(RoadEdge* selectedEdge) {
  * Update the up/down appearance of buttons according to the current mode.
  */
 void PropertyWindow::updateModeButtons() {
-	ui.pushButtonModeView->setDown(false);
-	ui.pushButtonModeSketch->setDown(false);
-	ui.pushButtonModeSelect->setDown(false);
+	ui.pushButtonModeView->setChecked(false);
+	ui.pushButtonModeSketch->setChecked(false);
+	ui.pushButtonModeSelect->setChecked(false);
 
 	switch (mainWin->mode) {
 	case RoadStyle::MODE_VIEW:
-		ui.pushButtonModeView->setDown(true);
+		ui.pushButtonModeView->setChecked(true);
 		break;
 	case RoadStyle::MODE_SKETCH:
-		ui.pushButtonModeSketch->setDown(true);
+		ui.pushButtonModeSketch->setChecked(true);
 		break;
 	case RoadStyle::MODE_SELECT:
-		ui.pushButtonModeSelect->setDown(true);
+		ui.pushButtonModeSelect->setChecked(true);
 		break;
 	}
-}
-
-/**
- * Event handler for button [simplify]
- */
-void PropertyWindow::simplify() {
-	float threshold = ui.lineEditSimplifyThreshold->text().toFloat();
-
-	GraphUtil::simplify(mainWin->glWidget->roads, threshold);
-	GraphUtil::clean(mainWin->glWidget->roads);
-	mainWin->glWidget->updateGL();
 }
 
 /**
@@ -91,4 +86,30 @@ void PropertyWindow::modeSketch(bool flag) {
 void PropertyWindow::modeSelect(bool flag) {
 	mainWin->mode = RoadStyle::MODE_SELECT;
 	updateModeButtons();
+}
+
+/**
+ * Clear the screen.
+ */
+void PropertyWindow::clear() {
+	mainWin->glWidget->sketch->clear();
+	mainWin->glWidget->updateGL();
+}
+
+/**
+ * Make the road graph from the sketch 
+ */
+void PropertyWindow::makeRoad() {
+	mainWin->glWidget->makeRoadsFromSketch();
+}
+
+/**
+ * Event handler for button [simplify]
+ */
+void PropertyWindow::simplify() {
+	float threshold = ui.lineEditSimplifyThreshold->text().toFloat();
+
+	GraphUtil::simplify(mainWin->glWidget->roads, threshold);
+	GraphUtil::clean(mainWin->glWidget->roads);
+	mainWin->glWidget->updateGL();
 }

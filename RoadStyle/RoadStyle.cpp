@@ -6,7 +6,8 @@ RoadStyle::RoadStyle(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, fl
 	ui.setupUi(this);
 	propertyWindow = new PropertyWindow(this);
 
-	connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(open()));
+	connect(ui.actionNew, SIGNAL(triggered()), this, SLOT(newRoad()));
+	connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openRoad()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
 	connect(ui.actionHighways, SIGNAL(triggered(bool)), this, SLOT(showHighways(bool)));
@@ -36,7 +37,11 @@ Attributes* RoadStyle::getAttributes() {
 	return attributes;
 }
 
-void RoadStyle::open() {
+void RoadStyle::newRoad() {
+	glWidget->newRoad();
+}
+
+void RoadStyle::openRoad() {
 	QString filename = QFileDialog::getOpenFileName(this, tr("Open GenStreetMap file..."), "", tr("GenStreetMap Files (*.gsm)"));
 
 	if (filename.isEmpty()) {
@@ -45,7 +50,7 @@ void RoadStyle::open() {
 	}
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
-	glWidget->loadOSM(filename.toAscii().constData());
+	glWidget->openRoad(filename.toAscii().constData());
 	QApplication::restoreOverrideCursor();
 }
 

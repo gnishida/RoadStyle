@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "RoadGraph.h"
+#include "Sketch.h"
 #include "RoadGraphRenderer.h"
 #include <QGLWidget>
 #include <qstring.h>
@@ -14,8 +15,8 @@ public:
 	RoadStyle* mainWin;
 	Camera* camera;
 	RoadGraph* roads;
-	RoadGraphRenderer* roadsRenderer;
-	RoadGraphRenderer* sketchRenderer;
+	Sketch* sketch;
+	RoadGraphRenderer* renderer;
 	QPoint lastPos;
 
 public:
@@ -23,7 +24,9 @@ public:
 	~GLWidget();
 
 	void drawScene();
-	void loadOSM(QString filename);
+	void newRoad();
+	void openRoad(QString filename);
+	void makeRoadsFromSketch();
 
 protected:
 	void mousePressEvent(QMouseEvent *event);
