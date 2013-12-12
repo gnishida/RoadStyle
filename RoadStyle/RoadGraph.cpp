@@ -46,17 +46,48 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 
 		// draw the border with darker color
 		for (int i = 0; i < num - 1; ++i) {
-			QVector3D pt1 = edge->getPolyLine()[i];
-			QVector3D pt2 = edge->getPolyLine()[i + 1];
-			QVector3D vec = pt2 - pt1;
-			vec = QVector3D(-vec.y(), vec.x(), 0.0f);
+			QVector2D pt1 = edge->polyLine[i];
+			QVector2D pt2 = edge->polyLine[i + 1];
+			QVector2D vec = pt2 - pt1;
+			vec = QVector2D(-vec.y(), vec.x());
 			vec.normalize();
 
-			QVector3D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector3D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector3D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.6f;
-			QVector3D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.6f;
-			//QVector3D normal = ucore::Util::calculateNormal(p0, p1, p2);
+			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.6f;
+			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.6f;
+
+			if (i > 0) {
+				QVector2D pt0 = edge->polyLine[i - 1];
+				QVector2D vec0 = pt1- pt0;
+				vec0 = QVector2D(-vec0.y(), vec0.x());
+				vec0.normalize();
+
+				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.6f;
+
+				float tab, tcd;
+				Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
+				Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
+			}
+
+			if (i < num - 2) {
+				QVector2D pt3 = edge->polyLine[i + 2];
+				QVector2D vec2 = pt3 - pt2;
+				vec2 = QVector2D(-vec2.y(), vec2.x());
+				vec2.normalize();
+
+				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.6f;
+				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.6f;
+
+				float tab, tcd;
+				Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
+				Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
+			}
 
 			switch (edge->type) {
 			case 3:	// high way
@@ -111,42 +142,73 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		}
 
 		for (int i = 0; i < num - 1; ++i) {
-			QVector3D pt1 = edge->getPolyLine()[i];
-			QVector3D pt2 = edge->getPolyLine()[i + 1];
-			QVector3D vec = pt2 - pt1;
-			vec = QVector3D(-vec.y(), vec.x(), 0.0f);
+			QVector2D pt1 = edge->polyLine[i];
+			QVector2D pt2 = edge->polyLine[i + 1];
+			QVector2D vec = pt2 - pt1;
+			vec = QVector2D(-vec.y(), vec.x());
 			vec.normalize();
 
-			QVector3D p0 = pt1 + vec * edge->getWidth(widthPerLane) / 2.0f;
-			QVector3D p1 = pt1 - vec * edge->getWidth(widthPerLane) / 2.0f;
-			QVector3D p2 = pt2 - vec * edge->getWidth(widthPerLane) / 2.0f;
-			QVector3D p3 = pt2 + vec * edge->getWidth(widthPerLane) / 2.0f;
-			//QVector3D normal = ucore::Util::calculateNormal(p0, p1, p2);
+			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.5f;
+			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.5f;
+			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.5f;
+			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.5f;
+
+			if (i > 0) {
+				QVector2D pt0 = edge->polyLine[i - 1];
+				QVector2D vec0 = pt1- pt0;
+				vec0 = QVector2D(-vec0.y(), vec0.x());
+				vec0.normalize();
+
+				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.5f;
+
+				float tab, tcd;
+				Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
+				Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
+			}
+
+			if (i < num - 2) {
+				QVector2D pt3 = edge->polyLine[i + 2];
+				QVector2D vec2 = pt3 - pt2;
+				vec2 = QVector2D(-vec2.y(), vec2.x());
+				vec2.normalize();
+
+				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.5f;
+				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.5f;
+
+				float tab, tcd;
+				Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
+				Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
+			}
 
 			switch (edge->type) {
 			case 3:	// high way
 				v.color[0] = 1.0f;
 				v.color[1] = 0.88235f;
 				v.color[2] = 0.40784f;
-				v.location[2] = 2.0f;
+				v.location[2] = 0.3f;
 				break;
 			case 2: // avenue
 				v.color[0] = 1.0f;
 				v.color[1] = 1.0f;
 				v.color[2] = 1.0f;
-				v.location[2] = 1.0f;
+				v.location[2] = 0.2f;
 				break;
 			case 1: // street
 				v.color[0] = 1.0f;
 				v.color[1] = 1.0f;
 				v.color[2] = 1.0f;
-				v.location[2] = 1.0f;
+				v.location[2] = 0.2f;
 				break;
 			default:
 				v.color[0] = 1.0f;
 				v.color[1] = 1.0f;
 				v.color[2] = 1.0f;
-				v.location[2] = 1.0f;
+				v.location[2] = 0.2f;
 				break;
 			}
 
