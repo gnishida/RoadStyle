@@ -45,6 +45,8 @@ float RoadEdge::getWidth(float widthPerLane) {
 		return widthPerLane * 1.5f;
 	} else if (type == 3) { // high way
 		return widthPerLane * 2.0f;
+	} else {
+		return 0.0f;
 	}
 }
 
