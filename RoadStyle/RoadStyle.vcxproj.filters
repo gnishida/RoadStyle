@@ -110,6 +110,9 @@
     <ClCompile Include="Sketch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EditableRoadGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="RoadStyle.h">
@@ -190,6 +193,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sketch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditableRoadGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

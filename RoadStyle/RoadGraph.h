@@ -28,9 +28,9 @@ class RoadGraph {
 public:
 	BGLGraph graph;
 	bool modified;
-	//std::vector<Vertex> vertices;
 	std::vector<Renderable> renderables;
 	RoadEdge* selectedEdge;
+	RoadVertex* selectedVertex;
 	float widthPerLane;
 
 public:
@@ -47,7 +47,8 @@ public:
 
 	QList<RoadEdgeDesc> getOrderedEdgesByImportance();
 
-	RoadEdge* select(const QVector2D &pos);
+	RoadEdge* selectEdge(const QVector2D &pos);
+	RoadVertex* selectVertex(const QVector2D &pos);
 
 	void load(FILE* fp, int roadType);
 };

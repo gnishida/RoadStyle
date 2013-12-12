@@ -138,6 +138,7 @@
     <ClCompile Include="BFSForest.cpp" />
     <ClCompile Include="BFSTree.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="EditableRoadGraph.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_PropertyWindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -230,6 +231,7 @@
     <ClInclude Include="BFSForest.h" />
     <ClInclude Include="BFSTree.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="EditableRoadGraph.h" />
     <ClInclude Include="GeneratedFiles\ui_PropertyWindow.h" />
     <ClInclude Include="GeneratedFiles\ui_RoadStyle.h" />
     <ClInclude Include="GLWidget.h" />

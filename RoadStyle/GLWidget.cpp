@@ -84,9 +84,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 		mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
 
 		if (mainWin->mode == RoadStyle::MODE_VIEW) {
-			// select the edge close to the point
-			RoadEdge* selectedEdge = roads->select(pos);
-			mainWin->propertyWindow->setRoadEdge(selectedEdge);
+			// if the vertex is close to the point, the vertex is also selected
+			if (roads->selectVertex(pos) == NULL) {
+				// select the edge close to the point
+				RoadEdge* selectedEdge = roads->selectEdge(pos);
+				mainWin->propertyWindow->setRoadEdge(selectedEdge);
+			}
 		} else if (mainWin->mode == RoadStyle::MODE_SKETCH) {
 			RoadVertexDesc v1_desc;
 			if (!GraphUtil::getVertex(sketch, pos, 10.0f, v1_desc)) {
