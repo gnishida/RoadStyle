@@ -23,8 +23,12 @@ void RoadGraphRenderer::render(RoadGraph* object, RoadStyle* mainWin) {
 
 void RoadGraphRenderer::_render(RoadGraph* object) {
 	for (int i = 0; i < object->renderables.size(); i++) {
-		if (object->renderables[i].type == GL_LINE || object->renderables[i].type == GL_LINE_STRIP) {
+		if (object->renderables[i].type == GL_LINES || object->renderables[i].type == GL_LINE_STRIP) {
 			glLineWidth(object->renderables[i].size);
+		}
+
+		if (object->renderables[i].type == GL_POINTS) {
+			glPointSize(object->renderables[i].size);
 		}
 
 		glBegin(object->renderables[i].type);

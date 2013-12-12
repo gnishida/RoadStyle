@@ -106,7 +106,8 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 	if (selectedEdge != NULL) {
 		Vertex v;
 
-		renderables.push_back(Renderable(GL_LINE_STRIP, 10.0f));
+		// draw lines along the edge line
+		renderables.push_back(Renderable(GL_LINE_STRIP, 3.0f));
 		for (int i = 0; i < selectedEdge->polyLine.size(); i++) {
 			v.location[0] = selectedEdge->polyLine[i].x();
 			v.location[1] = selectedEdge->polyLine[i].y();
@@ -119,6 +120,22 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			v.normal[2] = 1.0f;
 
 			renderables[1].vertices.push_back(v);
+		}
+
+		// draw points along the edge poly line
+		renderables.push_back(Renderable(GL_POINTS, 10.0f));
+		for (int i = 0; i < selectedEdge->polyLine.size(); i++) {
+			v.location[0] = selectedEdge->polyLine[i].x();
+			v.location[1] = selectedEdge->polyLine[i].y();
+			v.location[2] = 1.0f;
+			v.color[0] = 0.0f;
+			v.color[1] = 0.0f;
+			v.color[2] = 1.0f;
+			v.normal[0] = 0.0f;
+			v.normal[1] = 0.0f;
+			v.normal[2] = 1.0f;
+
+			renderables[2].vertices.push_back(v);
 		}
 	}
 
