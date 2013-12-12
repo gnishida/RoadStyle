@@ -21,10 +21,9 @@ RoadGraph::~RoadGraph() {
 }
 
 void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets) {
-	int count = 0;
-	vertices.clear();
+	renderables.clear();
 
-	Vertex v;
+	renderables.push_back(Renderable(GL_TRIANGLES));
 
 	// road edge
 	RoadEdgeIter ei, eend;
@@ -44,209 +43,170 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			if (edge->type == 1) continue;
 		}
 
-		// draw the border with darker color
-		for (int i = 0; i < num - 1; ++i) {
-			QVector2D pt1 = edge->polyLine[i];
-			QVector2D pt2 = edge->polyLine[i + 1];
-			QVector2D vec = pt2 - pt1;
-			vec = QVector2D(-vec.y(), vec.x());
-			vec.normalize();
-
-			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.7f;
-			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.7f;
-			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.7f;
-			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.7f;
-
-			if (i > 0) {
-				QVector2D pt0 = edge->polyLine[i - 1];
-				QVector2D vec0 = pt1- pt0;
-				vec0 = QVector2D(-vec0.y(), vec0.x());
-				vec0.normalize();
-
-				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.7f;
-
-				float tab, tcd;
-				Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
-				Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
-			}
-
-			if (i < num - 2) {
-				QVector2D pt3 = edge->polyLine[i + 2];
-				QVector2D vec2 = pt3 - pt2;
-				vec2 = QVector2D(-vec2.y(), vec2.x());
-				vec2.normalize();
-
-				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.7f;
-				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.7f;
-
-				float tab, tcd;
-				Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
-				Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
-			}
-
-			switch (edge->type) {
-			case 3:	// high way
-				v.color[0] = 0.89803f;
-				v.color[1] = 0.6;
-				v.color[2] = 0.08235;
-				v.location[2] = 0.0f;
-				break;
-			case 2: // avenue
-				v.color[0] = 0.83921f;
-				v.color[1] = 0.80784f;
-				v.color[2] = 0.77647f;
-				v.location[2] = 0.0f;
-				break;
-			case 1: // street
-				v.color[0] = 0.83921f;
-				v.color[1] = 0.80784f;
-				v.color[2] = 0.77647f;
-				v.location[2] = 0.0f;
-				break;
-			default:
-				v.color[0] = 1.0f;
-				v.color[1] = 1.0f;
-				v.color[2] = 1.0f;
-				v.location[2] = 0.0f;
-				break;
-			}
-
-			v.location[0] = p0.x();
-			v.location[1] = p0.y();
-			vertices.push_back(v);
-
-			v.location[0] = p1.x();
-			v.location[1] = p1.y();
-			vertices.push_back(v);
-
-			v.location[0] = p2.x();
-			v.location[1] = p2.y();
-			vertices.push_back(v);
-
-			v.location[0] = p0.x();
-			v.location[1] = p0.y();
-			vertices.push_back(v);
-
-			v.location[0] = p2.x();
-			v.location[1] = p2.y();
-			vertices.push_back(v);
-
-			v.location[0] = p3.x();
-			v.location[1] = p3.y();
-			vertices.push_back(v);
+		QColor color;
+		switch (edge->type) {
+		case 3:	// high way
+			color.setRedF(0.89803f);
+			color.setGreenF(0.6f);
+			color.setBlueF(0.08235f);
+			break;
+		case 2: // avenue
+			color.setRedF(0.83921f);
+			color.setGreenF(0.80784f);
+			color.setBlueF(0.77647f);
+			break;
+		case 1: // street
+			color.setRedF(0.83921f);
+			color.setGreenF(0.80784f);
+			color.setBlueF(0.77647f);
+			break;
+		default:
+			color.setRedF(1.0f);
+			color.setGreenF(1.0f);
+			color.setBlueF(1.0f);
+			break;
 		}
 
-		for (int i = 0; i < num - 1; ++i) {
-			QVector2D pt1 = edge->polyLine[i];
-			QVector2D pt2 = edge->polyLine[i + 1];
-			QVector2D vec = pt2 - pt1;
-			vec = QVector2D(-vec.y(), vec.x());
-			vec.normalize();
+		// draw the border of the road segment
+		addMeshFromEdge(&renderables[0], edge, 1.4f, color, 0.0f);
 
-			QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * 0.5f;
-			QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * 0.5f;
-			QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * 0.5f;
-			QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * 0.5f;
-
-			if (i > 0) {
-				QVector2D pt0 = edge->polyLine[i - 1];
-				QVector2D vec0 = pt1- pt0;
-				vec0 = QVector2D(-vec0.y(), vec0.x());
-				vec0.normalize();
-
-				QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * 0.5f;
-
-				float tab, tcd;
-				Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
-				Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
-			}
-
-			if (i < num - 2) {
-				QVector2D pt3 = edge->polyLine[i + 2];
-				QVector2D vec2 = pt3 - pt2;
-				vec2 = QVector2D(-vec2.y(), vec2.x());
-				vec2.normalize();
-
-				QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * 0.5f;
-				QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * 0.5f;
-
-				float tab, tcd;
-				Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
-				Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
-			}
-
-			switch (edge->type) {
-			case 3:	// high way
-				v.color[0] = 1.0f;
-				v.color[1] = 0.88235f;
-				v.color[2] = 0.40784f;
-				v.location[2] = 0.3f;
-				break;
-			case 2: // avenue
-				v.color[0] = 1.0f;
-				v.color[1] = 1.0f;
-				v.color[2] = 1.0f;
-				v.location[2] = 0.2f;
-				break;
-			case 1: // street
-				v.color[0] = 1.0f;
-				v.color[1] = 1.0f;
-				v.color[2] = 1.0f;
-				v.location[2] = 0.2f;
-				break;
-			default:
-				v.color[0] = 1.0f;
-				v.color[1] = 1.0f;
-				v.color[2] = 1.0f;
-				v.location[2] = 0.2f;
-				break;
-			}
-
-			if (edge == selectedEdge) {
-				v.color[0] = 1.0f;
-				v.color[1] = 0.0f;
-				v.color[2] = 0.0f;
-			}
-
-			v.location[0] = p0.x();
-			v.location[1] = p0.y();
-			vertices.push_back(v);
-
-			v.location[0] = p1.x();
-			v.location[1] = p1.y();
-			vertices.push_back(v);
-
-			v.location[0] = p2.x();
-			v.location[1] = p2.y();
-			vertices.push_back(v);
-
-			v.location[0] = p0.x();
-			v.location[1] = p0.y();
-			vertices.push_back(v);
-
-			v.location[0] = p2.x();
-			v.location[1] = p2.y();
-			vertices.push_back(v);
-
-			v.location[0] = p3.x();
-			v.location[1] = p3.y();
-			vertices.push_back(v);
+		float height;
+		switch (edge->type) {
+		case 3:	// high way
+			color.setRedF(1.0f);
+			color.setGreenF(0.88235f);
+			color.setBlueF(0.40784f);
+			height = 0.3f;
+			break;
+		case 2: // avenue
+			color.setRedF(1.0f);
+			color.setGreenF(1.0f);
+			color.setBlueF(1.0f);
+			height = 0.2f;
+			break;
+		case 1: // street
+			color.setRedF(1.0f);
+			color.setGreenF(1.0f);
+			color.setBlueF(1.0f);
+			height = 0.2f;
+			break;
+		default:
+			color.setRedF(1.0f);
+			color.setGreenF(1.0f);
+			color.setBlueF(1.0f);
+			height = 0.2f;
+			break;
 		}
 
-		//if (++count == 8) break;
+		// draw the road segment
+		addMeshFromEdge(&renderables[0], edge, 1.0f, color, height);
+	}
+
+	// if a road segment is selected, draw a line with all the points along the poly line
+	if (selectedEdge != NULL) {
+		Vertex v;
+
+		renderables.push_back(Renderable(GL_LINE_STRIP, 10.0f));
+		for (int i = 0; i < selectedEdge->polyLine.size(); i++) {
+			v.location[0] = selectedEdge->polyLine[i].x();
+			v.location[1] = selectedEdge->polyLine[i].y();
+			v.location[2] = 1.0f;
+			v.color[0] = 0.0f;
+			v.color[1] = 0.0f;
+			v.color[2] = 1.0f;
+			v.normal[0] = 0.0f;
+			v.normal[1] = 0.0f;
+			v.normal[2] = 1.0f;
+
+			renderables[1].vertices.push_back(v);
+		}
 	}
 
 	modified = false;
+}
+
+/**
+ * Add a mesh for the specified edge.
+ */
+void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthFactor, QColor color, float height) {
+	Vertex v;
+
+	int num = edge->polyLine.size();
+
+	// draw the edge
+	for (int i = 0; i < num - 1; ++i) {
+		QVector2D pt1 = edge->polyLine[i];
+		QVector2D pt2 = edge->polyLine[i + 1];
+		QVector2D vec = pt2 - pt1;
+		vec = QVector2D(-vec.y(), vec.x());
+		vec.normalize();
+
+		QVector2D p0 = pt1 + vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+		QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+		QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+		QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+
+		if (i > 0) {
+			QVector2D pt0 = edge->polyLine[i - 1];
+			QVector2D vec0 = pt1- pt0;
+			vec0 = QVector2D(-vec0.y(), vec0.x());
+			vec0.normalize();
+
+			QVector2D q0 = pt0 + vec0 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q1 = pt0 - vec0 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q2 = pt1 - vec0 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q3 = pt1 + vec0 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+
+			float tab, tcd;
+			Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
+			Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
+		}
+
+		if (i < num - 2) {
+			QVector2D pt3 = edge->polyLine[i + 2];
+			QVector2D vec2 = pt3 - pt2;
+			vec2 = QVector2D(-vec2.y(), vec2.x());
+			vec2.normalize();
+
+			QVector2D q0 = pt2 + vec2 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q1 = pt2 - vec2 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q2 = pt3 - vec2 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+			QVector2D q3 = pt3 + vec2 * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
+
+			float tab, tcd;
+			Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
+			Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
+		}
+
+		v.color[0] = color.redF();
+		v.color[1] = color.greenF();
+		v.color[2] = color.blueF();
+		v.location[2] = height;
+
+		v.location[0] = p0.x();
+		v.location[1] = p0.y();
+		renderables[0].vertices.push_back(v);
+
+		v.location[0] = p1.x();
+		v.location[1] = p1.y();
+		renderables[0].vertices.push_back(v);
+
+		v.location[0] = p2.x();
+		v.location[1] = p2.y();
+		renderables[0].vertices.push_back(v);
+
+		v.location[0] = p0.x();
+		v.location[1] = p0.y();
+		renderables[0].vertices.push_back(v);
+
+		v.location[0] = p2.x();
+		v.location[1] = p2.y();
+		renderables[0].vertices.push_back(v);
+
+		v.location[0] = p3.x();
+		v.location[1] = p3.y();
+		renderables[0].vertices.push_back(v);
+	}
 }
 
 bool RoadGraph::getModified() {
@@ -351,14 +311,6 @@ RoadEdge* RoadGraph::select(const QVector2D &pos) {
 	selectedEdge = NULL;
 
 	return selectedEdge;
-}
-
-Vertex RoadGraph::getMesh(unsigned int index) {
-	return vertices[index];
-}
-
-unsigned int RoadGraph::getNumMeshes() {
-	return vertices.size();
 }
 
 void RoadGraph::load(FILE* fp, int roadType) {

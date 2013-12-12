@@ -2,6 +2,7 @@
 
 #include "RoadVertex.h"
 #include "RoadEdge.h"
+#include "Renderable.h"
 #include <stdio.h>
 #include <qvector2d.h>
 #include <boost/graph/adjacency_list.hpp>
@@ -21,21 +22,14 @@ typedef graph_traits<BGLGraph>::edge_iterator RoadEdgeIter;
 typedef graph_traits<BGLGraph>::out_edge_iterator RoadOutEdgeIter;
 typedef graph_traits<BGLGraph>::in_edge_iterator RoadInEdgeIter;
 
-typedef struct {
-	float location[3];
-	float tex[2];
-	float normal[3];
-	float color[4];
-	char padding[16];
-} Vertex;
-
 class RoadStyle;
 
 class RoadGraph {
 public:
 	BGLGraph graph;
 	bool modified;
-	std::vector<Vertex> vertices;
+	//std::vector<Vertex> vertices;
+	std::vector<Renderable> renderables;
 	RoadEdge* selectedEdge;
 	float widthPerLane;
 
@@ -44,6 +38,8 @@ public:
 	~RoadGraph();
 
 	void generateMesh(bool showHighways, bool showAvenues, bool showStreets);
+	void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthFactor, QColor color, float height);
+
 	bool getModified();
 	void setModified();
 	void clear();
@@ -52,9 +48,6 @@ public:
 	QList<RoadEdgeDesc> getOrderedEdgesByImportance();
 
 	RoadEdge* select(const QVector2D &pos);
-
-	Vertex getMesh(unsigned int index);
-	unsigned int getNumMeshes();
 
 	void load(FILE* fp, int roadType);
 };

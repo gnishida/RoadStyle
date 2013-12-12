@@ -22,11 +22,17 @@ void RoadGraphRenderer::render(RoadGraph* object, RoadStyle* mainWin) {
 }
 
 void RoadGraphRenderer::_render(RoadGraph* object) {
-	glBegin(GL_TRIANGLES);
-	for (int j = 0; j < object->getNumMeshes(); ++j) {
-		glColor3f(object->getMesh(j).color[0], object->getMesh(j).color[1], object->getMesh(j).color[2]);
-		glNormal3f(object->getMesh(j).normal[0], object->getMesh(j).normal[1], object->getMesh(j).normal[2]);
-		glVertex3f(object->getMesh(j).location[0], object->getMesh(j).location[1], object->getMesh(j).location[2]);
+	for (int i = 0; i < object->renderables.size(); i++) {
+		if (object->renderables[i].type == GL_LINE || object->renderables[i].type == GL_LINE_STRIP) {
+			glLineWidth(object->renderables[i].size);
+		}
+
+		glBegin(object->renderables[i].type);
+		for (int j = 0; j < object->renderables[i].vertices.size(); ++j) {
+			glColor3f(object->renderables[i].vertices[j].color[0], object->renderables[i].vertices[j].color[1], object->renderables[i].vertices[j].color[2]);
+			glNormal3f(object->renderables[i].vertices[j].normal[0], object->renderables[i].vertices[j].normal[1], object->renderables[i].vertices[j].normal[2]);
+			glVertex3f(object->renderables[i].vertices[j].location[0], object->renderables[i].vertices[j].location[1], object->renderables[i].vertices[j].location[2]);
+		}
+		glEnd();
 	}
-	glEnd();
 }
