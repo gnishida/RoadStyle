@@ -17,6 +17,13 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), p
 	//camera->setLookAt(-11840.0f, 354100.0f, 0.0f);
 	roads = new RoadGraph();
 	renderer = new RoadGraphRenderer();
+
+	// set up the camera
+	camera->setLookAt(0.0f, 0.0f, 0.0f);
+	camera->setTranslation(0.0f, 0.0f, 150.0f);
+
+	// initialize the width per lane
+	roads->widthPerLane = 2.0f;
 }
 
 GLWidget::~GLWidget() {
@@ -31,10 +38,6 @@ void GLWidget::loadOSM(QString filename) {
 
 	FILE* fp = fopen(filename.toUtf8().data(), "rb");
 	roads->load(fp, 7);
-
-	camera->setLookAt(0.0f, 0.0f, 0.0f);
-	camera->setTranslation(0.0f, 0.0f, 150.0f);
-	roads->widthPerLane = 2.0f;
 
 	updateGL();
 }
