@@ -33,6 +33,6 @@ protected:
 	void paintGL();
 
 private:
-	bool mouseTo2D(int x, int y, QVector2D *result);
+	void mouseTo2D(int x, int y, QVector2D *result);
 };
 

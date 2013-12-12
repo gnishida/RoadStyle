@@ -338,16 +338,19 @@ bool MoreImportantEdge::operator()(const RoadEdgeDesc& left, const RoadEdgeDesc&
  * @return			the selected road edge
  */
 RoadEdge* RoadGraph::select(const QVector2D &pos) {
+	modified = true;
+
 	RoadEdgeIter ei, eend;
 	for (boost::tie(ei, eend) = boost::edges(graph); ei != eend; ++ei) {
-		if (graph[*ei]->containsPoint(pos)) {
+		if (graph[*ei]->containsPoint(pos, widthPerLane)) {
 			selectedEdge = graph[*ei];
-			modified = true;
 			return selectedEdge;
 		}
 	}
 
-	return NULL;
+	selectedEdge = NULL;
+
+	return selectedEdge;
 }
 
 Vertex RoadGraph::getMesh(unsigned int index) {

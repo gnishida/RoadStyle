@@ -1070,7 +1070,7 @@ RoadVertexDesc GraphUtil::findConnectedNearestNeighbor(RoadGraph* roads, const Q
 }
 
 /**
- * Find the vertex which is the closest to the specified point.
+ * Find the edge which is the closest to the specified point.
  * If the distance is within the threshold, return true. Otherwise, return false.
  */
 bool GraphUtil::getEdge(RoadGraph* roads, const QVector2D &pt, float threshold, RoadEdgeDesc& e, bool onlyValidEdge) {

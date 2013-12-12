@@ -1,6 +1,7 @@
 #include "GLWidget.h"
 #include "RoadStyle.h"
 #include "OSMRoadsParser.h"
+#include "GraphUtil.h"
 #include <gl/GLU.h>
 #include <qvector3d.h>
 #include <qfile.h>
@@ -45,12 +46,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
 
 	if (event->buttons() & Qt::LeftButton) {
 		QVector2D pos;
-		if (mouseTo2D(event->x(), event->y(), &pos)) {
-			mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
-			RoadEdge* selectedEdge = roads->select(pos);
-			mainWin->propertyWindow->setRoadEdge(selectedEdge);
-			updateGL();
-		}
+		mouseTo2D(event->x(), event->y(), &pos);
+
+		mainWin->ui.statusBar->showMessage(QString("clicked (%1, %2)").arg(pos.x()).arg(pos.y()));
+		RoadEdge* selectedEdge = roads->select(pos);
+		mainWin->propertyWindow->setRoadEdge(selectedEdge);
+		updateGL();
 	}
 }
 
@@ -154,40 +155,32 @@ void GLWidget::paintGL() {
 	drawScene();	
 }
 
-bool GLWidget::mouseTo2D(int x,int y, QVector2D *result) {
+/**
+ * Convert the screen space coordinate (x, y) to the model space coordinate.
+ */
+void GLWidget::mouseTo2D(int x,int y, QVector2D *result) {
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
-	GLfloat winX, winY, winZ;
+
+	// retrieve the matrices
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	// retrieve the projected z-buffer of the origin
+	GLdouble origX, origY, origZ;
+	gluProject(0, 0, 0, modelview, projection, viewport, &origX, &origY, &origZ);
+
+	// set up the projected point
+	GLfloat winX = (float)x;
+	GLfloat winY = (float)viewport[3] - (float)y;
+	GLfloat winZ = origZ;
+	
+	// unproject the image plane coordinate to the model space
 	GLdouble posX, posY, posZ;
-
-	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-	glGetDoublev( GL_PROJECTION_MATRIX, projection );
-	glGetIntegerv( GL_VIEWPORT, viewport );
-
-	winX = (float)x;
-	winY = (float)viewport[3] - (float)y;
-	glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-
-	gluUnProject( winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
-
-	if(posZ<-10000.0f){//if it -10000 means we are not in the scene{
-		// 2. ray test
-		float zNear=1.0f,zFar= 10000.0f;
-		GLdouble posXFar, posYFar, posZFar;
-		gluUnProject( winX, winY, zNear, modelview, projection, viewport, &posX, &posY, &posZ);
-		gluUnProject( winX, winY, zFar, modelview, projection, viewport, &posXFar, &posYFar, &posZFar);
-		QVector3D rayStar(posX,posY,posZ);
-		QVector3D rayEnd(posXFar,posYFar,posZFar);
-		double t;
-		QVector3D q1(0,0,1.0f);
-		QVector3D q2(0,0,0);
-		//if(planeIntersectWithLine(rayStar,rayEnd,q1,q2,t,*result)!=0)	return true;
-		return false;
-	}
+	gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
 	result->setX(posX);
 	result->setY(posY);
-
-	return true;
 }
