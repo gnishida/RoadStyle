@@ -129,6 +129,7 @@ bool Util::segmentSegmentIntersectXY(const QVector2D& a, const QVector2D& b, con
 	QVector2D dirVec = b-a;
 
 	intPoint = a+(*tab)*dirVec;
+
 	return true;
 }
 

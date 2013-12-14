@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'PropertyWindow.ui'
 **
-** Created: Thu Dec 12 17:03:26 2013
+** Created: Fri Dec 13 10:36:16 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!

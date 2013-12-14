@@ -22,7 +22,7 @@ RoadGraph::RoadGraph() {
 RoadGraph::~RoadGraph() {
 }
 
-void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets) {
+void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets, float highwayHeight, float avenueHeight, float curbRatio, bool drawLocalStreets) {
 	renderables.clear();
 
 	renderables.push_back(Renderable(GL_TRIANGLES));
@@ -51,26 +51,42 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			color.setRedF(0.89803f);
 			color.setGreenF(0.6f);
 			color.setBlueF(0.08235f);
+			//color.setRed(229);
+			//color.setGreen(146);
+			//color.setBlue(5);
 			break;
 		case 2: // avenue
-			color.setRedF(0.83921f);
-			color.setGreenF(0.80784f);
-			color.setBlueF(0.77647f);
+			//color.setRedF(0.83921f);
+			//color.setGreenF(0.80784f);
+			//color.setBlueF(0.77647f);
+			color.setRed(217);
+			color.setGreen(209);
+			color.setBlue(201);
 			break;
 		case 1: // street
-			color.setRedF(0.83921f);
-			color.setGreenF(0.80784f);
-			color.setBlueF(0.77647f);
+			//color.setRedF(0.83921f);
+			//color.setGreenF(0.80784f);
+			//color.setBlueF(0.77647f);
+			color.setRed(217);
+			color.setGreen(209);
+			color.setBlue(201);
 			break;
 		default:
-			color.setRedF(1.0f);
-			color.setGreenF(1.0f);
-			color.setBlueF(1.0f);
+			color.setRed(255);
+			color.setGreen(255);
+			color.setBlue(255);
 			break;
 		}
 
 		// draw the border of the road segment
-		addMeshFromEdge(&renderables[0], edge, 1.4f, color, 0.0f);
+		if (!drawLocalStreets && edge->type == 1) {
+			// If this is the local street and it should be drawn in gray color, it should be a little narrow line.
+			addMeshFromEdge(&renderables[0], edge, 0.8f, color, 0.0f);
+		} else {
+			addMeshFromEdge(&renderables[0], edge, 1.0f + curbRatio, color, 0.0f);
+		}
+
+		if (!drawLocalStreets && edge->type == 1) continue;
 
 		float height;
 		switch (edge->type) {
@@ -78,25 +94,28 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 			color.setRedF(1.0f);
 			color.setGreenF(0.88235f);
 			color.setBlueF(0.40784f);
-			height = 0.3f;
+			//color.setRed(250);
+			//color.setGreen(158);
+			//color.setBlue(37);
+			height = highwayHeight;
 			break;
 		case 2: // avenue
-			color.setRedF(1.0f);
-			color.setGreenF(1.0f);
-			color.setBlueF(1.0f);
-			height = 0.2f;
+			color.setRed(255);
+			color.setGreen(255);
+			color.setBlue(255);
+			height = avenueHeight;
 			break;
 		case 1: // street
-			color.setRedF(1.0f);
-			color.setGreenF(1.0f);
-			color.setBlueF(1.0f);
-			height = 0.2f;
+			color.setRed(255);
+			color.setGreen(255);
+			color.setBlue(255);
+			height = avenueHeight;
 			break;
 		default:
-			color.setRedF(1.0f);
-			color.setGreenF(1.0f);
-			color.setBlueF(1.0f);
-			height = 0.2f;
+			color.setRed(255);
+			color.setGreen(255);
+			color.setBlue(255);
+			height = avenueHeight;
 			break;
 		}
 
@@ -188,7 +207,8 @@ void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float wi
 		QVector2D p1 = pt1 - vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
 		QVector2D p2 = pt2 - vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
 		QVector2D p3 = pt2 + vec * edge->getWidth(widthPerLane) * widthFactor * 0.5f;
-
+		
+		/*
 		if (i > 0) {
 			QVector2D pt0 = edge->polyLine[i - 1];
 			QVector2D vec0 = pt1- pt0;
@@ -204,7 +224,9 @@ void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float wi
 			Util::segmentSegmentIntersectXY(q1, q2, p1, p2, &tab, &tcd, false, p1);
 			Util::segmentSegmentIntersectXY(q0, q3, p0, p3, &tab, &tcd, false, p0);
 		}
+		*/
 
+		/*
 		if (i < num - 2) {
 			QVector2D pt3 = edge->polyLine[i + 2];
 			QVector2D vec2 = pt3 - pt2;
@@ -220,6 +242,7 @@ void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float wi
 			Util::segmentSegmentIntersectXY(p1, p2, q1, q2, &tab, &tcd, false, p2);
 			Util::segmentSegmentIntersectXY(p0, p3, q0, q3, &tab, &tcd, false, p3);				
 		}
+		*/
 
 		v.color[0] = color.redF();
 		v.color[1] = color.greenF();
