@@ -16,6 +16,7 @@ PropertyWindow::PropertyWindow(RoadStyle* mainWin) : QDockWidget("Property", (QW
 	connect(ui.pushButtonModeView, SIGNAL(clicked(bool)), this, SLOT(modeView(bool)));
 	connect(ui.pushButtonModeSketch, SIGNAL(clicked(bool)), this, SLOT(modeSketch(bool)));
 	connect(ui.pushButtonModeSelect, SIGNAL(clicked(bool)), this, SLOT(modeSelect(bool)));
+	connect(ui.pushButtonSearch, SIGNAL(clicked()), this, SLOT(search()));
 	connect(ui.pushButtonClear, SIGNAL(clicked()), this, SLOT(clear()));
 	connect(ui.pushButtonMakeRoad, SIGNAL(clicked()), this, SLOT(makeRoad()));
 	connect(ui.pushButtonSimplify, SIGNAL(clicked()), this, SLOT(simplify()));
@@ -86,6 +87,19 @@ void PropertyWindow::modeSketch(bool flag) {
 void PropertyWindow::modeSelect(bool flag) {
 	mainWin->mode = RoadStyle::MODE_SELECT;
 	updateModeButtons();
+}
+
+/**
+ * Search the similar roads from the reference.
+ */
+void PropertyWindow::search() {
+	GraphUtil::planarify(mainWin->glWidget->sketch);
+	for (int i = 0; i < mainWin->roadBoxList->references.size(); i++) {
+		mainWin->roadBoxList->references[i]->view->showSimilarity(mainWin->glWidget->sketch);
+	}
+
+
+	mainWin->glWidget->updateGL();
 }
 
 /**

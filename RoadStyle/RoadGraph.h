@@ -39,8 +39,8 @@ public:
 	RoadGraph();
 	~RoadGraph();
 
-	void generateMesh(bool showHighways, bool showAvenues, bool showStreets, float highwayHeight, float avenueHeight, float curbRatio, bool drawLocalStreets);
-	void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthFactor, QColor color, float height);
+	void generateMesh(bool showHighways, bool showAvenues, bool showStreets, float widthPerLane, float highwayHeight, float avenueHeight, float curbRatio, bool drawLocalStreets);
+	void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthPerLane, float widthFactor, QColor color, float height);
 
 	bool getModified();
 	void setModified();

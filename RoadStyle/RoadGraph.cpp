@@ -22,7 +22,7 @@ RoadGraph::RoadGraph() {
 RoadGraph::~RoadGraph() {
 }
 
-void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets, float highwayHeight, float avenueHeight, float curbRatio, bool drawLocalStreets) {
+void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStreets, float widthPerLane, float highwayHeight, float avenueHeight, float curbRatio, bool drawLocalStreets) {
 	renderables.clear();
 
 	renderables.push_back(Renderable(GL_TRIANGLES));
@@ -81,9 +81,9 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		// draw the border of the road segment
 		if (!drawLocalStreets && edge->type == 1) {
 			// If this is the local street and it should be drawn in gray color, it should be a little narrow line.
-			addMeshFromEdge(&renderables[0], edge, 0.8f, color, 0.0f);
+			addMeshFromEdge(&renderables[0], edge, widthPerLane, 0.8f, color, 0.0f);
 		} else {
-			addMeshFromEdge(&renderables[0], edge, 1.0f + curbRatio, color, 0.0f);
+			addMeshFromEdge(&renderables[0], edge, widthPerLane, 1.0f + curbRatio, color, 0.0f);
 		}
 
 		if (!drawLocalStreets && edge->type == 1) continue;
@@ -120,7 +120,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 		}
 
 		// draw the road segment
-		addMeshFromEdge(&renderables[0], edge, 1.0f, color, height);
+		addMeshFromEdge(&renderables[0], edge, widthPerLane, 1.0f, color, height);
 	}
 
 	renderables.push_back(Renderable(GL_POINTS, 20.0f));
@@ -190,7 +190,7 @@ void RoadGraph::generateMesh(bool showHighways, bool showAvenues, bool showStree
 /**
  * Add a mesh for the specified edge.
  */
-void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthFactor, QColor color, float height) {
+void RoadGraph::addMeshFromEdge(Renderable* renderable, RoadEdge* edge, float widthPerLane, float widthFactor, QColor color, float height) {
 	Vertex v;
 
 	int num = edge->polyLine.size();

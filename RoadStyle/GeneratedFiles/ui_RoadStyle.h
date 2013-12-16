@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'RoadStyle.ui'
 **
-** Created: Fri Dec 13 10:36:16 2013
+** Created: Sat Dec 14 16:57:02 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -36,6 +36,7 @@ public:
     QAction *actionExtract_and_Save;
     QAction *actionProperty;
     QAction *actionNew;
+    QAction *actionReferenceRoads;
     QWidget *centralWidget;
     QMenuBar *menuBar;
     QMenu *menuFile;
@@ -73,6 +74,8 @@ public:
         actionProperty->setObjectName(QString::fromUtf8("actionProperty"));
         actionNew = new QAction(RoadStyleClass);
         actionNew->setObjectName(QString::fromUtf8("actionNew"));
+        actionReferenceRoads = new QAction(RoadStyleClass);
+        actionReferenceRoads->setObjectName(QString::fromUtf8("actionReferenceRoads"));
         centralWidget = new QWidget(RoadStyleClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         RoadStyleClass->setCentralWidget(centralWidget);
@@ -103,6 +106,7 @@ public:
         menuView->addAction(actionAvenues);
         menuView->addAction(actionStreets);
         menuWindow->addAction(actionProperty);
+        menuWindow->addAction(actionReferenceRoads);
 
         retranslateUi(RoadStyleClass);
 
@@ -121,6 +125,7 @@ public:
         actionExtract_and_Save->setText(QApplication::translate("RoadStyleClass", "Extract and Save", 0, QApplication::UnicodeUTF8));
         actionProperty->setText(QApplication::translate("RoadStyleClass", "Property", 0, QApplication::UnicodeUTF8));
         actionNew->setText(QApplication::translate("RoadStyleClass", "New", 0, QApplication::UnicodeUTF8));
+        actionReferenceRoads->setText(QApplication::translate("RoadStyleClass", "Reference Roads", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("RoadStyleClass", "File", 0, QApplication::UnicodeUTF8));
         menuView->setTitle(QApplication::translate("RoadStyleClass", "View", 0, QApplication::UnicodeUTF8));
         menuWindow->setTitle(QApplication::translate("RoadStyleClass", "Window", 0, QApplication::UnicodeUTF8));

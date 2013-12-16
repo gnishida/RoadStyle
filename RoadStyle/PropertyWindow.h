@@ -23,6 +23,7 @@ public slots:
 	void modeView(bool flag);
 	void modeSketch(bool flag);
 	void modeSelect(bool flag);
+	void search();
 	void clear();
 	void makeRoad();
 	void simplify();

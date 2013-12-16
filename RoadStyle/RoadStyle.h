@@ -5,6 +5,7 @@
 #include "ui_RoadStyle.h"
 #include "PropertyWindow.h"
 #include "GLWidget.h"
+#include "RoadBoxList.h"
 #include "Attributes.h"
 
 class RoadStyle : public QMainWindow {
@@ -16,6 +17,8 @@ public:
 public:
 	Ui::RoadStyleClass ui;
 	PropertyWindow* propertyWindow;
+	RoadBoxList* roadBoxList;
+	QDockWidget *dockRoadBoxList;
 	GLWidget* glWidget;
 	Attributes* attributes;
 	int mode;
@@ -33,6 +36,7 @@ public slots:
 	void showAvenues(bool flag);
 	void showStreets(bool flag);
 	void showProperty();
+	void showReferenceRoads();
 };
 
 #endif // ROADSTYLE_H

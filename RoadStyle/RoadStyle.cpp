@@ -1,20 +1,27 @@
 #include "RoadStyle.h"
-#include "FeatureExtractor.h"
+#include <qdockwidget.h>
 #include <qfiledialog.h>
 
 RoadStyle::RoadStyle(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, flags) {
 	ui.setupUi(this);
+
+	// setup the docking widgets
 	propertyWindow = new PropertyWindow(this);
 
+	dockRoadBoxList = new QDockWidget(tr("Reference Roads"), this);
+	roadBoxList = new RoadBoxList(this);//dockRoadBoxList);
+	dockRoadBoxList->setWidget(roadBoxList);
+	dockRoadBoxList->hide();
+
+	// register the menu handlers
 	connect(ui.actionNew, SIGNAL(triggered()), this, SLOT(newRoad()));
 	connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openRoad()));
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
-
 	connect(ui.actionHighways, SIGNAL(triggered(bool)), this, SLOT(showHighways(bool)));
 	connect(ui.actionAvenues, SIGNAL(triggered(bool)), this, SLOT(showAvenues(bool)));
 	connect(ui.actionStreets, SIGNAL(triggered(bool)), this, SLOT(showStreets(bool)));
-
 	connect(ui.actionProperty, SIGNAL(triggered()), this, SLOT(showProperty()));
+	connect(ui.actionReferenceRoads, SIGNAL(triggered()), this, SLOT(showReferenceRoads()));
 
 	attributes = new Attributes();
 	attributes->set("showHighways", true);
@@ -26,8 +33,9 @@ RoadStyle::RoadStyle(QWidget *parent, Qt::WFlags flags) : QMainWindow(parent, fl
 
 	mode = MODE_VIEW;
 
+	// setup the GL widget
 	glWidget = new GLWidget(this);
-	this->setCentralWidget(glWidget);
+	setCentralWidget(glWidget);
 }
 
 RoadStyle::~RoadStyle() {
@@ -75,4 +83,9 @@ void RoadStyle::showStreets(bool flag) {
 void RoadStyle::showProperty() {
 	propertyWindow->show();
 	addDockWidget(Qt::LeftDockWidgetArea, propertyWindow);
+}
+
+void RoadStyle::showReferenceRoads() {
+	dockRoadBoxList->show();
+	addDockWidget(Qt::RightDockWidgetArea, dockRoadBoxList);
 }

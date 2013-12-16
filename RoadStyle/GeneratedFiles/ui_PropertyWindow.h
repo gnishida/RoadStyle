@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'PropertyWindow.ui'
 **
-** Created: Fri Dec 13 10:36:16 2013
+** Created: Sat Dec 14 17:38:40 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -43,6 +43,7 @@ public:
     QPushButton *pushButtonModeSelect;
     QPushButton *pushButtonClear;
     QPushButton *pushButtonMakeRoad;
+    QPushButton *pushButtonSearch;
 
     void setupUi(QDockWidget *PropertyWindow)
     {
@@ -70,7 +71,7 @@ public:
         pushButtonModeView->setGeometry(QRect(10, 10, 51, 51));
         groupBox = new QGroupBox(dockWidgetContents);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        groupBox->setGeometry(QRect(10, 220, 171, 111));
+        groupBox->setGeometry(QRect(10, 270, 171, 111));
         label = new QLabel(groupBox);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(10, 20, 31, 16));
@@ -94,10 +95,13 @@ public:
         pushButtonModeSelect->setGeometry(QRect(130, 10, 51, 51));
         pushButtonClear = new QPushButton(dockWidgetContents);
         pushButtonClear->setObjectName(QString::fromUtf8("pushButtonClear"));
-        pushButtonClear->setGeometry(QRect(20, 110, 151, 31));
+        pushButtonClear->setGeometry(QRect(20, 150, 151, 31));
         pushButtonMakeRoad = new QPushButton(dockWidgetContents);
         pushButtonMakeRoad->setObjectName(QString::fromUtf8("pushButtonMakeRoad"));
-        pushButtonMakeRoad->setGeometry(QRect(20, 150, 151, 31));
+        pushButtonMakeRoad->setGeometry(QRect(20, 190, 151, 31));
+        pushButtonSearch = new QPushButton(dockWidgetContents);
+        pushButtonSearch->setObjectName(QString::fromUtf8("pushButtonSearch"));
+        pushButtonSearch->setGeometry(QRect(20, 110, 151, 31));
         PropertyWindow->setWidget(dockWidgetContents);
 
         retranslateUi(PropertyWindow);
@@ -118,6 +122,7 @@ public:
         pushButtonModeSelect->setText(QApplication::translate("PropertyWindow", "Select", 0, QApplication::UnicodeUTF8));
         pushButtonClear->setText(QApplication::translate("PropertyWindow", "Clear", 0, QApplication::UnicodeUTF8));
         pushButtonMakeRoad->setText(QApplication::translate("PropertyWindow", "Make Roads", 0, QApplication::UnicodeUTF8));
+        pushButtonSearch->setText(QApplication::translate("PropertyWindow", "Search", 0, QApplication::UnicodeUTF8));
         Q_UNUSED(PropertyWindow);
     } // retranslateUi
 

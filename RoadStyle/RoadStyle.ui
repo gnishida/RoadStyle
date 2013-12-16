@@ -44,6 +44,7 @@
      <string>Window</string>
     </property>
     <addaction name="actionProperty"/>
+    <addaction name="actionReferenceRoads"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -119,6 +120,11 @@
   <action name="actionNew">
    <property name="text">
     <string>New</string>
+   </property>
+  </action>
+  <action name="actionReferenceRoads">
+   <property name="text">
+    <string>Reference Roads</string>
    </property>
   </action>
  </widget>

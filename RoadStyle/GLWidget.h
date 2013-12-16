@@ -16,6 +16,7 @@ public:
 	Camera* camera;
 	RoadGraph* roads;
 	Sketch* sketch;
+	RoadGraph* ref_roads;
 	RoadGraphRenderer* renderer;
 	QPoint lastPos;
 

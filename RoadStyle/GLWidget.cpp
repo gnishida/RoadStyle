@@ -15,6 +15,7 @@ GLWidget::GLWidget(QWidget *parent) : QGLWidget(QGLFormat(QGL::SampleBuffers), p
 
 	roads = new RoadGraph();
 	sketch = new Sketch();
+	ref_roads = NULL;
 	renderer = new RoadGraphRenderer();
 
 	// set up the camera
@@ -31,16 +32,25 @@ GLWidget::~GLWidget() {
 
 void GLWidget::drawScene() {
 	// define the height of the roads according to the zoom factor
-	//float highwayHeight = camera->dz * 0.0015f;
-	//float avenueHeight = camera->dz * 0.001f;
 	float highwayHeight = camera->dz * 0.0012f;
 	float avenueHeight = camera->dz * 0.0008f;
+
+	// define the width per lane
+	float widthPerLane;
+	if (camera->dz < 1080.0f) {
+		widthPerLane = camera->dz / 90.0f;
+	} else if (camera->dz < 5760.0f) {
+		widthPerLane = 12.0f;
+	} else {
+		widthPerLane = 24.0f;
+	}
 
 	// draw the road graph
 	roads->generateMesh(
 		mainWin->getAttributes()->getBool("showHighways"), 
 		mainWin->getAttributes()->getBool("showAvenues"), 
 		mainWin->getAttributes()->getBool("showStreets"),
+		widthPerLane,
 		highwayHeight,
 		avenueHeight,
 		(camera->dz < 2880.0f) ? 0.4f : 0.8f,
@@ -50,6 +60,20 @@ void GLWidget::drawScene() {
 	// draw the sketch
 	sketch->generateSketchMesh();
 	renderer->render(sketch->renderables);
+
+	// draw the reference road graph
+	if (ref_roads != NULL) {
+		ref_roads->generateMesh(
+			mainWin->getAttributes()->getBool("showHighways"), 
+			mainWin->getAttributes()->getBool("showAvenues"), 
+			mainWin->getAttributes()->getBool("showStreets"),
+			widthPerLane,
+			highwayHeight,
+			avenueHeight,
+			(camera->dz < 2880.0f) ? 0.4f : 0.8f,
+			(camera->dz < 5760.0f) ? true : false);
+		renderer->render(ref_roads->renderables);
+	}
 }
 
 /**
@@ -171,21 +195,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 		if (camera->dz > 11520.0f) camera->dz = 11520.0f;
 
 		// define the width per lane according to the z coordinate of the camera
-		/*
-		if (camera->dz < 360.0f) {
-			roads->setWidthPerLane(2.0f);
-		} else if (camera->dz < 720.0f) {
-			roads->setWidthPerLane(4.0f);
-		} else if (camera->dz < 1440.0f) {
-			roads->setWidthPerLane(8.0f);
-		} else if (camera->dz < 2880.0f) {
-			roads->setWidthPerLane(12.0f);
-		} else if (camera->dz < 5760.0f) {
-			roads->setWidthPerLane(12.0);
-		} else {//if (camera->dz <= 11520.0f) {
-			roads->setWidthPerLane(24.0f);
-		}
-		*/
 		if (camera->dz < 1080.0f) {
 			roads->setWidthPerLane(camera->dz / 90.0f);
 		} else if (camera->dz < 5760.0f) {
